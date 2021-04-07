@@ -121,18 +121,30 @@ describe('Lens', () => {
 
   it('pick', () => {
     interface S {
-      readonly a: {
-        readonly b: string
-        readonly c: number
-        readonly d: boolean
-      }
+      readonly a: string
+      readonly b: number
+      readonly c: boolean
     }
-    const sa = pipe(_.id<S>(), _.prop('a'), _.pick('b', 'c'))
-    const s: S = { a: { b: 'b', c: 1, d: true } }
-    U.deepStrictEqual(sa.get(s), { b: 'b', c: 1 })
-    U.deepStrictEqual(sa.set({ b: 'b', c: 2 })(s), { a: { b: 'b', c: 2, d: true } })
+    const sa = pipe(_.id<S>(), _.pick('a', 'b'))
+    const s: S = { a: 'a', b: 1, c: true }
+    U.deepStrictEqual(sa.get(s), { a: 'a', b: 1 })
+    U.deepStrictEqual(sa.set({ a: 'a', b: 2 })(s), { a: 'a', b: 2, c: true })
     // same reference check
-    U.strictEqual(sa.set({ b: 'b', c: 1 })(s), s)
+    U.strictEqual(sa.set({ a: 'a', b: 1 })(s), s)
+  })
+
+  it('omit', () => {
+    interface S {
+      readonly a: string
+      readonly b: number
+      readonly c: boolean
+    }
+    const sa = pipe(_.id<S>(), _.omit('c'))
+    const s: S = { a: 'a', b: 1, c: true }
+    U.deepStrictEqual(sa.get(s), { a: 'a', b: 1 })
+    U.deepStrictEqual(sa.set({ a: 'a', b: 2 })(s), { a: 'a', b: 2, c: true })
+    // same reference check
+    U.strictEqual(sa.set({ a: 'a', b: 1 })(s), s)
   })
 
   it('component', () => {

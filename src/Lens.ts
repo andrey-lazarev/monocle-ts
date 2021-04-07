@@ -212,6 +212,16 @@ export const pick: <A, P extends keyof A>(
 ) => <S>(sa: Lens<S, A>) => Lens<S, { readonly [K in P]: A[K] }> = _.lensPick
 
 /**
+ * Return a `Lens` from a `Lens` and a list of omitted props.
+ *
+ * @category combinators
+ * @since 2.3.10
+ */
+export const omit: <A, P extends keyof A>(
+  ...omitted: readonly [P, ...ReadonlyArray<P>]
+) => <S>(sa: Lens<S, A>) => Lens<S, { readonly [K in Exclude<keyof A, P>]: A[K] }> = _.lensOmit
+
+/**
  * Return a `Lens` from a `Lens` focused on a component of a tuple.
  *
  * @category combinators

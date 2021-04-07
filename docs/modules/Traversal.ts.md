@@ -39,6 +39,7 @@ Added in v2.3.0
   - [key](#key)
   - [left](#left)
   - [modify](#modify)
+  - [omit](#omit)
   - [pick](#pick)
   - [prop](#prop)
   - [right](#right)
@@ -248,6 +249,21 @@ export declare const modify: <A>(f: Endomorphism<A>) => <S>(sa: Traversal<S, A>)
 ```
 
 Added in v2.3.0
+
+## omit
+
+Return a `Traversal` from a `Traversal` and a list of omitted props.
+
+**Signature**
+
+```ts
+export declare const omit: <A, P extends keyof A>(
+  omitted_0: P,
+  ...omitted_1: P[]
+) => <S>(sa: Traversal<S, A>) => Traversal<S, { readonly [K in Exclude<keyof A, P>]: A[K] }>
+```
+
+Added in v2.3.10
 
 ## pick
 

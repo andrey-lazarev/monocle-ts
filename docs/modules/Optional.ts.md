@@ -46,6 +46,7 @@ Added in v2.3.0
   - [modify](#modify)
   - [modifyF](#modifyf)
   - [modifyOption](#modifyoption)
+  - [omit](#omit)
   - [pick](#pick)
   - [prop](#prop)
   - [right](#right)
@@ -256,6 +257,21 @@ export declare const modifyOption: <A>(f: Endomorphism<A>) => <S>(optional: Opti
 ```
 
 Added in v2.3.0
+
+## omit
+
+Return a `Optional` from a `Optional` and a list of omitted props.
+
+**Signature**
+
+```ts
+export declare const omit: <A, P extends keyof A>(
+  omitted_0: P,
+  ...omitted_1: P[]
+) => <S>(sa: Optional<S, A>) => Optional<S, { readonly [K in Exclude<keyof A, P>]: A[K] }>
+```
+
+Added in v2.3.10
 
 ## pick
 

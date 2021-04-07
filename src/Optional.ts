@@ -227,6 +227,17 @@ export const pick = <A, P extends keyof A>(
   compose(pipe(_.lensId<A>(), _.lensPick(...props), _.lensAsOptional))
 
 /**
+ * Return a `Optional` from a `Optional` and a list of omitted props.
+ *
+ * @category combinators
+ * @since 2.3.10
+ */
+export const omit = <A, P extends keyof A>(
+  ...omitted: readonly [P, ...ReadonlyArray<P>]
+): (<S>(sa: Optional<S, A>) => Optional<S, { readonly [K in Exclude<keyof A, P>]: A[K] }>) =>
+  compose(pipe(_.lensId<A>(), _.lensOmit(...omitted), _.lensAsOptional))
+
+/**
  * Return a `Optional` from a `Optional` focused on a component of a tuple.
  *
  * @category combinators

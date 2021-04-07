@@ -40,6 +40,7 @@ Added in v2.3.0
   - [left](#left)
   - [modify](#modify)
   - [modifyF](#modifyf)
+  - [omit](#omit)
   - [pick](#pick)
   - [prop](#prop)
   - [right](#right)
@@ -241,6 +242,21 @@ export declare function modifyF<F>(
 ```
 
 Added in v2.3.5
+
+## omit
+
+Return a `Lens` from a `Iso` and a list of omitted props.
+
+**Signature**
+
+```ts
+export declare const omit: <A, P extends keyof A>(
+  omitted_0: P,
+  ...omitted_1: P[]
+) => <S>(sa: Iso<S, A>) => Lens<S, { readonly [K in Exclude<keyof A, P>]: A[K] }>
+```
+
+Added in v2.3.10
 
 ## pick
 

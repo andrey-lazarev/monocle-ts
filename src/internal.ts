@@ -118,11 +118,39 @@ export const lensPick = <A, P extends keyof A>(...props: readonly [P, P, ...Read
       }
       return r as any
     },
-    (a) => (s) => {
-      const oa = sa.get(s)
+    (p) => (s) => {
+      const a = sa.get(s)
       for (const k of props) {
-        if (a[k] !== oa[k]) {
-          return sa.set(Object.assign({}, oa, a))(s)
+        if (p[k] !== a[k]) {
+          return sa.set(Object.assign({}, a, p))(s)
+        }
+      }
+      return s
+    }
+  )
+
+const hasOwnProperty = Object.prototype.hasOwnProperty
+
+/** @internal */
+export const lensOmit = <A, P extends keyof A>(...omitted: readonly [P, ...ReadonlyArray<P>]) => <S>(
+  sa: Lens<S, A>
+): Lens<S, { readonly [K in Exclude<keyof A, P>]: A[K] }> =>
+  lens(
+    (s) => {
+      const a = sa.get(s)
+      const r = { ...a }
+      for (const k of omitted) {
+        delete r[k]
+      }
+      return r as any
+    },
+    (o) => (s) => {
+      const a = sa.get(s)
+      for (const k in a) {
+        if (hasOwnProperty.call(o, k)) {
+          if (o[k] !== a[k]) {
+            return sa.set(Object.assign({}, a, o))(s)
+          }
         }
       }
       return s

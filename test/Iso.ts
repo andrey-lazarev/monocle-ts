@@ -174,15 +174,33 @@ describe('Iso', () => {
   })
 
   it('pick', () => {
-    type S = readonly [number, string]
-    type A = { readonly a: number; readonly b: string }
+    type S = readonly [number, string, boolean]
+    type A = { readonly a: number; readonly b: string; readonly c: boolean }
     const sa: _.Iso<S, A> = _.iso(
-      (s) => ({ a: s[0], b: s[1] }),
-      (a) => [a.a, a.b]
+      (s) => ({ a: s[0], b: s[1], c: s[2] }),
+      (a) => [a.a, a.b, a.c]
     )
     const lens = pipe(sa, _.pick('a', 'b'))
-    U.deepStrictEqual(lens.get([1, 'b']), { a: 1, b: 'b' })
-    U.deepStrictEqual(lens.set({ a: 2, b: 'c' })([1, 'b']), [2, 'c'])
+    U.deepStrictEqual(lens.get([1, 'b', true]), { a: 1, b: 'b' })
+    U.deepStrictEqual(lens.set({ a: 2, b: 'c' })([1, 'b', true]), [2, 'c', true])
+    // same reference check
+    const input: S = [1, 'b', true]
+    U.strictEqual(lens.set({ a: 1, b: 'b' })(input), input)
+  })
+
+  it('omit', () => {
+    type S = readonly [number, string, boolean]
+    type A = { readonly a: number; readonly b: string; readonly c: boolean }
+    const sa: _.Iso<S, A> = _.iso(
+      (s) => ({ a: s[0], b: s[1], c: s[2] }),
+      (a) => [a.a, a.b, a.c]
+    )
+    const lens = pipe(sa, _.omit('c'))
+    U.deepStrictEqual(lens.get([1, 'b', true]), { a: 1, b: 'b' })
+    U.deepStrictEqual(lens.set({ a: 2, b: 'c' })([1, 'b', true]), [2, 'c', true])
+    // same reference check
+    const input: S = [1, 'b', true]
+    U.strictEqual(lens.set({ a: 1, b: 'b' })(input), input)
   })
 
   it('component', () => {

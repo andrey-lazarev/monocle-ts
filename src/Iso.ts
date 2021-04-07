@@ -232,6 +232,17 @@ export const pick = <A, P extends keyof A>(
 ): (<S>(sa: Iso<S, A>) => Lens<S, { readonly [K in P]: A[K] }>) => flow(asLens, _.lensPick(...props))
 
 /**
+ * Return a `Lens` from a `Iso` and a list of omitted props.
+ *
+ * @category combinators
+ * @since 2.3.10
+ */
+export const omit = <A, P extends keyof A>(
+  ...omitted: readonly [P, ...ReadonlyArray<P>]
+): (<S>(sa: Iso<S, A>) => Lens<S, { readonly [K in Exclude<keyof A, P>]: A[K] }>) =>
+  flow(asLens, _.lensOmit(...omitted))
+
+/**
  * Return a `Lens` from a `Iso` focused on a component of a tuple.
  *
  * @category combinators

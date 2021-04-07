@@ -17,6 +17,16 @@ high state of flux, you're at risk of it changing without notice.
 
 - **Experimental**
   - (\*) rename `props` to `pick`
+  - `Iso`
+    - add `omit`
+  - `Lens`
+    - add `omit`
+  - `Prism`
+    - add `omit`
+  - `Optional`
+    - add `omit`
+  - `Traversal`
+    - add `omit`
 
 (\*) breaking change
 
