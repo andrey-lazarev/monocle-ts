@@ -19,14 +19,19 @@ high state of flux, you're at risk of it changing without notice.
   - (\*) rename `props` to `pick`
   - `Iso`
     - add `omit`
+    - add `rename`
   - `Lens`
     - add `omit`
+    - add `rename`
   - `Prism`
     - add `omit`
+    - add `rename`
   - `Optional`
     - add `omit`
+    - add `rename`
   - `Traversal`
     - add `omit`
+    - add `rename`
 
 (\*) breaking change
 

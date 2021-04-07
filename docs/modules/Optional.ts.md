@@ -49,6 +49,7 @@ Added in v2.3.0
   - [omit](#omit)
   - [pick](#pick)
   - [prop](#prop)
+  - [rename](#rename)
   - [right](#right)
   - [setOption](#setoption)
   - [some](#some)
@@ -300,6 +301,21 @@ export declare const prop: <A, P extends keyof A>(prop: P) => <S>(sa: Optional<S
 ```
 
 Added in v2.3.0
+
+## rename
+
+**Signature**
+
+```ts
+export declare const rename: <A, F extends keyof A, T extends string>(
+  from: F,
+  to: Exclude<T, keyof A>
+) => <S>(
+  sa: Optional<S, A>
+) => Optional<S, { readonly [K in T | Exclude<keyof A, F>]: K extends keyof A ? A[K] : A[F] }>
+```
+
+Added in v2.3.10
 
 ## right
 

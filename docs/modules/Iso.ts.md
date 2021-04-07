@@ -43,6 +43,8 @@ Added in v2.3.0
   - [omit](#omit)
   - [pick](#pick)
   - [prop](#prop)
+  - [rename](#rename)
+  - [reverse](#reverse)
   - [right](#right)
   - [some](#some)
   - [traverse](#traverse)
@@ -56,7 +58,6 @@ Added in v2.3.0
 - [constructors](#constructors)
   - [id](#id)
   - [iso](#iso)
-  - [reverse](#reverse)
 - [converters](#converters)
   - [asLens](#aslens)
   - [asOptional](#asoptional)
@@ -286,6 +287,29 @@ export declare const prop: <A, P extends keyof A>(prop: P) => <S>(sa: Iso<S, A>)
 
 Added in v2.3.8
 
+## rename
+
+**Signature**
+
+```ts
+export declare const rename: <A, F extends keyof A, T extends string>(
+  from: F,
+  to: Exclude<T, keyof A>
+) => <S>(sa: Iso<S, A>) => Iso<S, { readonly [K in T | Exclude<keyof A, F>]: K extends keyof A ? A[K] : A[F] }>
+```
+
+Added in v2.3.10
+
+## reverse
+
+**Signature**
+
+```ts
+export declare const reverse: <S, A>(sa: Iso<S, A>) => Iso<A, S>
+```
+
+Added in v2.3.0
+
 ## right
 
 Return a `Prism` from a `Iso` focused on the `Right` of a `Either` type.
@@ -417,16 +441,6 @@ export declare const iso: <S, A>(get: (s: S) => A, reverseGet: (a: A) => S) => I
 ```
 
 Added in v2.3.8
-
-## reverse
-
-**Signature**
-
-```ts
-export declare const reverse: <S, A>(sa: Iso<S, A>) => Iso<A, S>
-```
-
-Added in v2.3.0
 
 # converters
 

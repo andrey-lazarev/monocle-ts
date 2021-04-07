@@ -327,4 +327,14 @@ describe('Iso', () => {
     U.deepStrictEqual(optional.set(1)({ a: [-1] }), { a: [-1] })
     U.deepStrictEqual(optional.set(3)({ a: [-1, 2] }), { a: [-1, 3] })
   })
+
+  it('rename', () => {
+    interface S {
+      readonly a: string
+      readonly b: number
+    }
+    const sa = pipe(_.id<S>(), _.rename('a', 'c'))
+    U.deepStrictEqual(sa.get({ a: 'a', b: 1 }), { c: 'a', b: 1 })
+    U.deepStrictEqual(sa.reverseGet({ c: 'a', b: 1 }), { a: 'a', b: 1 })
+  })
 })

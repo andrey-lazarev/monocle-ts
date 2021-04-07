@@ -308,4 +308,15 @@ describe('Lens', () => {
     U.deepStrictEqual(f({ a: 1 }), O.some({ a: 2 }))
     U.deepStrictEqual(f({ a: -1 }), O.none)
   })
+
+  it('rename', () => {
+    interface S {
+      readonly a: string
+      readonly b: number
+      readonly c: boolean
+    }
+    const sa = pipe(_.id<S>(), _.pick('a', 'b'), _.rename('a', 'd'))
+    U.deepStrictEqual(sa.get({ a: 'a', b: 1, c: true }), { d: 'a', b: 1 })
+    U.deepStrictEqual(sa.set({ d: 'b', b: 2 })({ a: 'a', b: 1, c: true }), { a: 'b', b: 2, c: true })
+  })
 })

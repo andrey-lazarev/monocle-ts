@@ -161,6 +161,16 @@ export const composeTraversal = <A, B>(ab: Traversal<A, B>): (<S>(sa: Prism<S, A
  * @category combinators
  * @since 2.3.10
  */
+export const rename = <A, F extends keyof A, T extends string>(
+  from: F,
+  to: Exclude<T, keyof A>
+): (<S>(sa: Prism<S, A>) => Prism<S, { readonly [K in T | Exclude<keyof A, F>]: K extends keyof A ? A[K] : A[F] }>) =>
+  composeIso(_.isoRename<A>()(from, to))
+
+/**
+ * @category combinators
+ * @since 2.3.10
+ */
 export function modifyF<F extends URIS3>(
   F: Applicative3<F>
 ): <A, R, E>(f: (a: A) => Kind3<F, R, E, A>) => <S>(sa: Prism<S, A>) => (s: S) => Kind3<F, R, E, S>

@@ -182,4 +182,25 @@ describe('Traversal', () => {
     const sa = pipe(_.id<S>(), _.traverse(A.readonlyArray), _.fromNullable)
     U.deepStrictEqual(sa.modifyF(Id.identity)((n) => n * 2)([1, undefined, 3]), [2, undefined, 6])
   })
+
+  it('rename', () => {
+    type S = ReadonlyArray<{
+      readonly a: string
+      readonly b: number
+      readonly c: boolean
+    }>
+    const sa = pipe(_.id<S>(), _.traverse(A.readonlyArray), _.pick('a', 'b'), _.rename('a', 'd'))
+    U.deepStrictEqual(
+      sa.modifyF(Id.identity)((x) => ({ b: x.b * 2, d: x.d + '!' }))([
+        { a: 'a', b: 1, c: true },
+        { a: 'aa', b: 2, c: false },
+        { a: 'aaa', b: 3, c: true }
+      ]),
+      [
+        { a: 'a!', b: 2, c: true },
+        { a: 'aa!', b: 4, c: false },
+        { a: 'aaa!', b: 6, c: true }
+      ]
+    )
+  })
 })

@@ -369,4 +369,15 @@ describe('Prism', () => {
     U.deepStrictEqual(f(leaf), O.some(leaf))
     U.deepStrictEqual(f(node(-1, leaf, leaf)), O.none)
   })
+
+  it('rename', () => {
+    type S = O.Option<{
+      readonly a: string
+      readonly b: number
+    }>
+    const sa = pipe(_.id<S>(), _.some, _.rename('a', 'c'))
+    U.deepStrictEqual(sa.getOption(O.some({ a: 'a', b: 1 })), O.some({ c: 'a', b: 1 }))
+    U.deepStrictEqual(sa.getOption(O.none), O.none)
+    U.deepStrictEqual(sa.reverseGet({ c: 'c', b: 2 }), O.some({ a: 'c', b: 2 }))
+  })
 })

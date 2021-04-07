@@ -45,6 +45,9 @@ export const iso = <S, A>(get: Iso<S, A>['get'], reverseGet: Iso<S, A>['reverseG
 })
 
 /** @internal */
+export const isoId = <S>(): Iso<S, S> => iso(identity, identity)
+
+/** @internal */
 export const isoAsLens = <S, A>(sa: Iso<S, A>): Lens<S, A> => lens(sa.get, flow(sa.reverseGet, constant))
 
 /** @internal */
@@ -60,12 +63,37 @@ export const isoAsTraversal = <S, A>(sa: Iso<S, A>): Traversal<S, A> =>
     F.map(f(sa.get(s)), (a) => sa.reverseGet(a))
   )
 
+/** @internal */
+export const isoRename = <S>() => <A, F extends keyof A, T extends string>(
+  from: F,
+  to: Exclude<T, keyof A>
+): Iso<S, { readonly [K in Exclude<keyof A, F> | T]: K extends keyof A ? A[K] : A[F] }> =>
+  iso(
+    (s) => {
+      const b: any = { ...s }
+      const value = b[from]
+      delete b[from]
+      b[to] = value
+      return b
+    },
+    (b) => {
+      const a: any = { ...b }
+      const value = a[to]
+      delete a[to]
+      a[from] = value
+      return a
+    }
+  )
+
 // -------------------------------------------------------------------------------------
 // Lens
 // -------------------------------------------------------------------------------------
 
 /** @internal */
-export const lens = <S, A>(get: Lens<S, A>['get'], set: Lens<S, A>['set']): Lens<S, A> => ({ get, set })
+export const lens = <S, A>(get: Lens<S, A>['get'], set: Lens<S, A>['set']): Lens<S, A> => ({
+  get,
+  set
+})
 
 /** @internal */
 export const lensAsOptional = <S, A>(sa: Lens<S, A>): Optional<S, A> => optional(flow(sa.get, O.some), sa.set)
@@ -78,7 +106,7 @@ export const lensAsTraversal = <S, A>(sa: Lens<S, A>): Traversal<S, A> =>
 export const lensComposeLens = <A, B>(ab: Lens<A, B>) => <S>(sa: Lens<S, A>): Lens<S, B> =>
   lens(
     (s) => ab.get(sa.get(s)),
-    (b) => (s) => sa.set(ab.set(b)(sa.get(s)))(s)
+    (d) => (s) => sa.set(ab.set(d)(sa.get(s)))(s)
   )
 
 /** @internal */

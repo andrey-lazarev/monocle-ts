@@ -147,6 +147,16 @@ export const composeTraversal = <A, B>(ab: Traversal<A, B>): (<S>(sa: Lens<S, A>
 
 /**
  * @category combinators
+ * @since 2.3.10
+ */
+export const rename = <A, F extends keyof A, T extends string>(
+  from: F,
+  to: Exclude<T, keyof A>
+): (<S>(sa: Lens<S, A>) => Lens<S, { readonly [K in T | Exclude<keyof A, F>]: K extends keyof A ? A[K] : A[F] }>) =>
+  composeIso(_.isoRename<A>()(from, to))
+
+/**
+ * @category combinators
  * @since 2.3.5
  */
 export function modifyF<F extends URIS3>(

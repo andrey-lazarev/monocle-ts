@@ -298,4 +298,17 @@ describe('Optional', () => {
       true
     )
   })
+
+  it('rename', () => {
+    type S = O.Option<{
+      readonly a: string
+      readonly b: number
+      readonly c: boolean
+    }>
+    const sa = pipe(_.id<S>(), _.some, _.pick('a', 'b'), _.rename('a', 'd'))
+    U.deepStrictEqual(sa.getOption(O.some({ a: 'a', b: 1, c: true })), O.some({ d: 'a', b: 1 }))
+    U.deepStrictEqual(sa.getOption(O.none), O.none)
+    U.deepStrictEqual(sa.set({ d: 'b', b: 2 })(O.some({ a: 'a', b: 1, c: true })), O.some({ a: 'b', b: 2, c: true }))
+    U.deepStrictEqual(sa.set({ d: 'b', b: 2 })(O.none), O.none)
+  })
 })

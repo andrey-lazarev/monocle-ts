@@ -154,6 +154,18 @@ export const composeOptional: <A, B>(ab: Optional<A, B>) => <S>(sa: Traversal<S,
 
 /**
  * @category combinators
+ * @since 2.3.10
+ */
+export const rename = <A, F extends keyof A, T extends string>(
+  from: F,
+  to: Exclude<T, keyof A>
+): (<S>(
+  sa: Traversal<S, A>
+) => Traversal<S, { readonly [K in T | Exclude<keyof A, F>]: K extends keyof A ? A[K] : A[F] }>) =>
+  composeIso(_.isoRename<A>()(from, to))
+
+/**
+ * @category combinators
  * @since 2.3.0
  */
 export const modify = <A>(f: Endomorphism<A>) => <S>(sa: Traversal<S, A>): Endomorphism<S> => {

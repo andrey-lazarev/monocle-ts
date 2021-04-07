@@ -16,7 +16,7 @@
  */
 import { Category2 } from 'fp-ts/lib/Category'
 import { Either } from 'fp-ts/lib/Either'
-import { Endomorphism, flow, identity, Predicate, Refinement } from 'fp-ts/lib/function'
+import { Endomorphism, flow, Predicate, Refinement } from 'fp-ts/lib/function'
 import { Functor, Functor1, Functor2, Functor3 } from 'fp-ts/lib/Functor'
 import { HKT, Kind, Kind2, Kind3, URIS, URIS2, URIS3 } from 'fp-ts/lib/HKT'
 import { Invariant2 } from 'fp-ts/lib/Invariant'
@@ -59,7 +59,7 @@ export const iso: <S, A>(get: Iso<S, A>['get'], reverseGet: Iso<S, A>['reverseGe
  * @category constructors
  * @since 2.3.0
  */
-export const id = <S>(): Iso<S, S> => iso(identity, identity)
+export const id: <S>() => Iso<S, S> = _.isoId
 
 // -------------------------------------------------------------------------------------
 // converters
@@ -159,7 +159,17 @@ export const composeTraversal = <A, B>(ab: Traversal<A, B>): (<S>(sa: Iso<S, A>)
 // -------------------------------------------------------------------------------------
 
 /**
- * @category constructors
+ * @category combinators
+ * @since 2.3.10
+ */
+export const rename = <A, F extends keyof A, T extends string>(
+  from: F,
+  to: Exclude<T, keyof A>
+): (<S>(sa: Iso<S, A>) => Iso<S, { readonly [K in Exclude<keyof A, F> | T]: K extends keyof A ? A[K] : A[F] }>) =>
+  compose(_.isoRename<A>()(from, to))
+
+/**
+ * @category combinators
  * @since 2.3.0
  */
 export const reverse = <S, A>(sa: Iso<S, A>): Iso<A, S> => iso(sa.reverseGet, sa.get)
