@@ -1,5 +1,5 @@
 import { Setter } from '../../src'
-import * as assert from 'assert'
+import * as U from '../util'
 
 type Point = {
   readonly x: number
@@ -17,11 +17,11 @@ describe('Setter', () => {
 
   it('modify', () => {
     const eg1 = _x.modify(double)(eg0)
-    assert.strictEqual(eg1.x, double(eg0.x))
-    assert.strictEqual(eg1.y, eg0.y)
+    U.strictEqual(eg1.x, double(eg0.x))
+    U.strictEqual(eg1.y, eg0.y)
   })
 
   it('set', () => {
-    assert.strictEqual(_x.set(0)(eg0).x, 0)
+    U.strictEqual(_x.set(0)(eg0).x, 0)
   })
 })

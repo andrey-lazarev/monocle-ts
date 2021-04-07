@@ -1,4 +1,3 @@
-import * as assert from 'assert'
 import * as Id from 'fp-ts/lib/Identity'
 import * as O from 'fp-ts/lib/Option'
 import { pipe } from 'fp-ts/lib/pipeable'
@@ -111,11 +110,11 @@ describe('Optional', () => {
     U.deepStrictEqual(optional.getOption([1]), O.some(1))
     U.deepStrictEqual(optional.set(2)([]), [])
     U.deepStrictEqual(optional.set(2)([1]), [2])
-    // should return the same reference
+    // same reference check
     const empty: S = []
     const full: S = [1]
-    assert.strictEqual(optional.set(1)(empty), empty)
-    assert.strictEqual(optional.set(1)(full), full)
+    U.strictEqual(optional.set(1)(empty), empty)
+    U.strictEqual(optional.set(1)(full), full)
   })
 
   it('indexNonEmpty', () => {
@@ -125,9 +124,9 @@ describe('Optional', () => {
     U.deepStrictEqual(optional.getOption([1, 2]), O.some(2))
     U.deepStrictEqual(optional.set(3)([1]), [1])
     U.deepStrictEqual(optional.set(3)([1, 2]), [1, 3])
-    // should return the same reference
+    // same reference check
     const full: S = [1, 2]
-    assert.strictEqual(optional.set(2)(full), full)
+    U.strictEqual(optional.set(2)(full), full)
   })
 
   it('key', () => {

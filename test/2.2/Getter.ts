@@ -1,5 +1,5 @@
 import { Getter } from '../../src'
-import * as assert from 'assert'
+import * as U from '../util'
 
 type Point = {
   readonly x: number
@@ -12,6 +12,6 @@ describe('Getter', () => {
   const eg0 = { x: 42, y: -1 }
 
   it('get', () => {
-    assert.strictEqual(_x.get(eg0), 42)
+    U.strictEqual(_x.get(eg0), 42)
   })
 })

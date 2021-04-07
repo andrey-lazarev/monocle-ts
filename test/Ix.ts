@@ -1,7 +1,6 @@
-import * as assert from 'assert'
-import * as _ from '../src/Ix'
-import * as O from 'fp-ts/lib/Option'
 import { eqString } from 'fp-ts/lib/Eq'
+import * as O from 'fp-ts/lib/Option'
+import * as _ from '../src/Ix'
 import * as U from './util'
 
 describe('Ix', () => {
@@ -30,11 +29,11 @@ describe('Ix', () => {
         ['b', 2]
       ])
     )
-    // should return the same reference if nothing changed
+    // same reference check
     const x = new Map([
       ['a', 1],
       ['b', 2]
     ])
-    assert.strictEqual(index.set(1)(x), x)
+    U.strictEqual(index.set(1)(x), x)
   })
 })

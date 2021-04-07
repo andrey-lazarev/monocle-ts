@@ -1,15 +1,14 @@
-import * as assert from 'assert'
-import * as _ from '../src/Lens'
-import { pipe } from 'fp-ts/lib/pipeable'
-import * as O from 'fp-ts/lib/Option'
-import * as A from 'fp-ts/lib/ReadonlyArray'
-import * as T from '../src/Traversal'
-import * as Op from '../src/Optional'
-import * as Id from 'fp-ts/lib/Identity'
-import * as U from './util'
-import { ReadonlyRecord } from 'fp-ts/lib/ReadonlyRecord'
-import { ReadonlyNonEmptyArray } from 'fp-ts/lib/ReadonlyNonEmptyArray'
 import { identity } from 'fp-ts/lib/function'
+import * as Id from 'fp-ts/lib/Identity'
+import * as O from 'fp-ts/lib/Option'
+import { pipe } from 'fp-ts/lib/pipeable'
+import * as A from 'fp-ts/lib/ReadonlyArray'
+import { ReadonlyNonEmptyArray } from 'fp-ts/lib/ReadonlyNonEmptyArray'
+import { ReadonlyRecord } from 'fp-ts/lib/ReadonlyRecord'
+import * as _ from '../src/Lens'
+import * as Op from '../src/Optional'
+import * as T from '../src/Traversal'
+import * as U from './util'
 
 describe('Lens', () => {
   describe('pipeables', () => {
@@ -71,8 +70,8 @@ describe('Lens', () => {
     const s: S = { a: 1 }
     U.deepStrictEqual(sa.getOption(s), O.some(1))
     U.deepStrictEqual(sa.getOption({}), O.none)
-    // should return the same reference
-    assert.strictEqual(sa.set(1)(s), s)
+    // same reference check
+    U.strictEqual(sa.set(1)(s), s)
   })
 
   it('modify', () => {
@@ -84,7 +83,7 @@ describe('Lens', () => {
       _.modify((a) => a * 2)
     )
     U.deepStrictEqual(f({ a: 1 }), { a: 2 })
-    // should return the same reference if nothing changed
+    // same reference check
     const input = { a: 1 }
     const sa: _.Lens<S, number> = _.lens(
       (s) => s.a,
@@ -101,10 +100,10 @@ describe('Lens', () => {
     }
     const sa = pipe(_.id<S>(), _.prop('a'), _.prop('b'))
     const s: S = { a: { b: 1 } }
-    assert.strictEqual(sa.get(s), 1)
+    U.strictEqual(sa.get(s), 1)
     U.deepStrictEqual(sa.set(2)(s), { a: { b: 2 } })
-    // should return the same reference
-    assert.strictEqual(sa.set(1)(s), s)
+    // same reference check
+    U.strictEqual(sa.set(1)(s), s)
   })
 
   it('pick', () => {
@@ -119,8 +118,8 @@ describe('Lens', () => {
     const s: S = { a: { b: 'b', c: 1, d: true } }
     U.deepStrictEqual(sa.get(s), { b: 'b', c: 1 })
     U.deepStrictEqual(sa.set({ b: 'b', c: 2 })(s), { a: { b: 'b', c: 2, d: true } })
-    // should return the same reference
-    assert.strictEqual(sa.set({ b: 'b', c: 1 })(s), s)
+    // same reference check
+    U.strictEqual(sa.set({ b: 'b', c: 1 })(s), s)
   })
 
   it('component', () => {
@@ -129,10 +128,10 @@ describe('Lens', () => {
     }
     const sa = pipe(_.id<S>(), _.prop('a'), _.component(1))
     const s: S = { a: ['a', 1] }
-    assert.strictEqual(sa.get(s), 1)
+    U.strictEqual(sa.get(s), 1)
     U.deepStrictEqual(sa.set(2)(s), { a: ['a', 2] })
-    // should return the same reference
-    assert.strictEqual(sa.set(1)(s), s)
+    // same reference check
+    U.strictEqual(sa.set(1)(s), s)
   })
 
   it('index', () => {
@@ -144,11 +143,11 @@ describe('Lens', () => {
     U.deepStrictEqual(optional.getOption({ a: [1] }), O.some(1))
     U.deepStrictEqual(optional.set(2)({ a: [] }), { a: [] })
     U.deepStrictEqual(optional.set(2)({ a: [1] }), { a: [2] })
-    // should return the same reference
+    // same reference check
     const empty: S = { a: [] }
     const full: S = { a: [1] }
-    assert.strictEqual(optional.set(1)(empty), empty)
-    assert.strictEqual(optional.set(1)(full), full)
+    U.strictEqual(optional.set(1)(empty), empty)
+    U.strictEqual(optional.set(1)(full), full)
   })
 
   it('indexNonEmpty', () => {
@@ -160,9 +159,9 @@ describe('Lens', () => {
     U.deepStrictEqual(optional.getOption({ a: [1, 2] }), O.some(2))
     U.deepStrictEqual(optional.set(3)({ a: [1] }), { a: [1] })
     U.deepStrictEqual(optional.set(3)({ a: [1, 2] }), { a: [1, 3] })
-    // should return the same reference
+    // same reference check
     const full: S = { a: [1, 2] }
-    assert.strictEqual(optional.set(2)(full), full)
+    U.strictEqual(optional.set(2)(full), full)
   })
 
   it('key', () => {
@@ -175,9 +174,9 @@ describe('Lens', () => {
     U.deepStrictEqual(sa.getOption(empty), O.none)
     U.deepStrictEqual(sa.getOption(full), O.some(1))
     U.deepStrictEqual(sa.set(2)(full), { a: { k: 2, j: 2 } })
-    // should return the same reference
-    assert.strictEqual(sa.set(2)(empty), empty)
-    assert.strictEqual(sa.set(1)(full), full)
+    // same reference check
+    U.strictEqual(sa.set(2)(empty), empty)
+    U.strictEqual(sa.set(1)(full), full)
   })
 
   it('traverse', () => {

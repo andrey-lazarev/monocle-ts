@@ -1,4 +1,3 @@
-import * as assert from 'assert'
 import * as E from 'fp-ts/lib/Either'
 import { identity } from 'fp-ts/lib/function'
 import * as Id from 'fp-ts/lib/Identity'
@@ -81,7 +80,7 @@ describe('Prism', () => {
   it('set', () => {
     U.strictEqual(pipe(value, _.set(2))(leaf), leaf)
     U.deepStrictEqual(pipe(value, _.set(2))(node(1, leaf, leaf)), node(2, leaf, leaf))
-    // should return the same reference if nothing changed
+    // same reference check
     interface S {
       readonly a: number
     }
@@ -100,7 +99,7 @@ describe('Prism', () => {
     )
     U.strictEqual(modify(leaf), leaf)
     U.deepStrictEqual(modify(node(1, leaf, leaf)), node(2, leaf, leaf))
-    // should return the same reference if nothing changed
+    // same reference check
     interface S {
       readonly a: number
     }
@@ -156,11 +155,11 @@ describe('Prism', () => {
     U.deepStrictEqual(optional.getOption([1]), O.some(1))
     U.deepStrictEqual(optional.set(2)([]), [])
     U.deepStrictEqual(optional.set(2)([1]), [2])
-    // should return the same reference
+    // same reference check
     const empty: S = []
     const full: S = [1]
-    assert.strictEqual(optional.set(1)(empty), empty)
-    assert.strictEqual(optional.set(1)(full), full)
+    U.strictEqual(optional.set(1)(empty), empty)
+    U.strictEqual(optional.set(1)(full), full)
   })
 
   it('indexNonEmpty', () => {
@@ -169,9 +168,9 @@ describe('Prism', () => {
     U.deepStrictEqual(optional.getOption([1, 2]), O.some(2))
     U.deepStrictEqual(optional.set(3)([1]), [1])
     U.deepStrictEqual(optional.set(3)([1, 2]), [1, 3])
-    // should return the same reference
+    // same reference check
     const full: S = [1, 2]
-    assert.strictEqual(optional.set(2)(full), full)
+    U.strictEqual(optional.set(2)(full), full)
   })
 
   it('key', () => {

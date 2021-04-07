@@ -1,6 +1,5 @@
-import { Lens } from '../../src'
-import * as assert from 'assert'
 import { identity } from 'fp-ts/lib/function'
+import { Lens } from '../../src'
 import * as U from '../util'
 
 interface Street {
@@ -49,17 +48,17 @@ function capitalize(s: string): string {
 describe('Lens', () => {
   it('fromProp', () => {
     const name2 = Lens.fromProp<Person>()('name')
-    assert.strictEqual(name2.get(person), 'giulio')
-    assert.strictEqual(name2.modify(capitalize)(person).name, 'Giulio')
-    assert.strictEqual(name2.set('giulio')(person), person)
-    assert.strictEqual(name2.modify(identity)(person), person)
+    U.strictEqual(name2.get(person), 'giulio')
+    U.strictEqual(name2.modify(capitalize)(person).name, 'Giulio')
+    U.strictEqual(name2.set('giulio')(person), person)
+    U.strictEqual(name2.modify(identity)(person), person)
   })
 
   it('fromPath', () => {
     const lens = Lens.fromPath<Employee>()(['company', 'address', 'street', 'name'])
-    assert.strictEqual(lens.modify(capitalize)(employee).company.address.street.name, 'High street')
-    assert.strictEqual(lens.set('high street')(employee), employee)
-    assert.strictEqual(lens.modify(identity)(employee), employee)
+    U.strictEqual(lens.modify(capitalize)(employee).company.address.street.name, 'High street')
+    U.strictEqual(lens.set('high street')(employee), employee)
+    U.strictEqual(lens.modify(identity)(employee), employee)
   })
 
   it('fromNullableProp', () => {
@@ -77,19 +76,19 @@ describe('Lens', () => {
     const inner = Lens.fromNullableProp<Outer>()('inner', { value: 0, foo: 'foo' })
     const lens = inner.compose(value)
     U.deepStrictEqual(lens.set(1)({}), { inner: { value: 1, foo: 'foo' } })
-    assert.strictEqual(lens.get({}), 0)
+    U.strictEqual(lens.get({}), 0)
     U.deepStrictEqual(lens.set(1)({ inner: { value: 1, foo: 'bar' } }), { inner: { value: 1, foo: 'bar' } })
-    assert.strictEqual(lens.get({ inner: { value: 1, foo: 'bar' } }), 1)
-    assert.strictEqual(lens.set(1)(outer1), outer1)
-    assert.strictEqual(lens.modify(identity)(outer1), outer1)
+    U.strictEqual(lens.get({ inner: { value: 1, foo: 'bar' } }), 1)
+    U.strictEqual(lens.set(1)(outer1), outer1)
+    U.strictEqual(lens.modify(identity)(outer1), outer1)
   })
 
   it('fromProps', () => {
     const lens = Lens.fromProps<Person>()(['name', 'age'])
     U.deepStrictEqual(lens.get(person), { name: 'giulio', age: 44 })
     U.deepStrictEqual(lens.set({ name: 'Guido', age: 47 })(person), { name: 'Guido', age: 47, rememberMe: true })
-    assert.strictEqual(lens.set({ age: 44, name: 'giulio' })(person), person)
-    assert.strictEqual(lens.modify(identity)(person), person)
+    U.strictEqual(lens.set({ age: 44, name: 'giulio' })(person), person)
+    U.strictEqual(lens.modify(identity)(person), person)
   })
 
   it('compose', () => {
@@ -111,14 +110,14 @@ describe('Lens', () => {
         num: 1
       }
     }
-    assert.strictEqual(composition1.get(address), 'name')
+    U.strictEqual(composition1.get(address), 'name')
     U.deepStrictEqual(composition1.set('name2')(address), expected)
-    assert.strictEqual(composition1.set('name')(address), address)
-    assert.strictEqual(composition1.modify(identity)(address), address)
+    U.strictEqual(composition1.set('name')(address), address)
+    U.strictEqual(composition1.modify(identity)(address), address)
 
-    assert.strictEqual(composition2.get(address), composition1.get(address))
+    U.strictEqual(composition2.get(address), composition1.get(address))
     U.deepStrictEqual(composition2.set('name2')(address), composition1.set('name2')(address))
-    assert.strictEqual(composition2.set('name')(address), address)
-    assert.strictEqual(composition2.modify(identity)(address), address)
+    U.strictEqual(composition2.set('name')(address), address)
+    U.strictEqual(composition2.modify(identity)(address), address)
   })
 })

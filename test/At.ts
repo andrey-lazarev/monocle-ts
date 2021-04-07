@@ -1,7 +1,6 @@
-import * as assert from 'assert'
-import * as _ from '../src/At'
-import * as O from 'fp-ts/lib/Option'
 import { eqString } from 'fp-ts/lib/Eq'
+import * as O from 'fp-ts/lib/Option'
+import * as _ from '../src/At'
 import * as U from './util'
 
 describe('At', () => {
@@ -39,12 +38,12 @@ describe('At', () => {
         ['b', 2]
       ])
     )
-    // should return the same reference if nothing changed
+    // same reference check
     const x = new Map([
       ['a', 1],
       ['b', 2]
     ])
-    assert.strictEqual(at.set(O.some(1))(x), x)
+    U.strictEqual(at.set(O.some(1))(x), x)
   })
 
   it('atReadonlySet', () => {

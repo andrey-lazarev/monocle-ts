@@ -1,4 +1,3 @@
-import * as assert from 'assert'
 import { identity } from 'fp-ts/lib/function'
 import * as O from 'fp-ts/lib/Option'
 import { Optional } from '../../src'
@@ -48,9 +47,9 @@ describe('Optional', () => {
       }
     })
     U.deepStrictEqual(numberFromResponse.set('b')(response2), response2)
-    assert.strictEqual(numberFromResponse.set('555-1234')(response1), response1)
-    assert.strictEqual(numberFromResponse.modify(identity)(response1), response1)
-    assert.strictEqual(numberFromResponse.modify(identity)(response2), response2)
+    U.strictEqual(numberFromResponse.set('555-1234')(response1), response1)
+    U.strictEqual(numberFromResponse.modify(identity)(response1), response1)
+    U.strictEqual(numberFromResponse.modify(identity)(response2), response2)
   })
 
   it('fromNullableProp', () => {
