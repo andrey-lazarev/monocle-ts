@@ -374,14 +374,15 @@ export function findFirstNonEmpty<A>(
  * @category Invariant
  * @since 2.3.0
  */
-export const imap: <A, B>(f: (a: A) => B, g: (b: B) => A) => <S>(sa: Iso<S, A>) => Iso<S, B> = (f, g) => (ea) =>
-  imap_(ea, f, g)
+export const imap: <A, B>(f: (a: A) => B, g: (b: B) => A) => <S>(sa: Iso<S, A>) => Iso<S, B> = (f, g) =>
+  composeIso(_.iso(f, g))
 
 // -------------------------------------------------------------------------------------
 // instances
 // -------------------------------------------------------------------------------------
 
-const imap_: Invariant2<URI>['imap'] = (ea, ab, ba) => iso(flow(ea.get, ab), flow(ba, ea.reverseGet))
+/* istanbul ignore next */
+const imap_: Invariant2<URI>['imap'] = (ea, ab, ba) => pipe(ea, imap(ab, ba))
 
 /**
  * @category instances
