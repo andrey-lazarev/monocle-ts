@@ -1,3 +1,4 @@
+import { identity } from 'fp-ts/lib/function'
 import * as Id from 'fp-ts/lib/Identity'
 import * as O from 'fp-ts/lib/Option'
 import { pipe } from 'fp-ts/lib/pipeable'
@@ -111,6 +112,23 @@ describe('Iso', () => {
     )
     U.deepStrictEqual(f(1), O.some(2))
     U.deepStrictEqual(f(-1), O.none)
+    // same reference check
+    const sa: _.Iso<{ readonly a: number }, number> = _.iso(
+      (s) => s.a,
+      (a) => ({ a })
+    )
+    const input = { a: 1 }
+    U.strictEqual(pipe(sa, _.modifyF(Id.identity)(identity))(input), input)
+  })
+
+  it('modify', () => {
+    // same reference check
+    const sa: _.Iso<{ readonly a: number }, number> = _.iso(
+      (s) => s.a,
+      (a) => ({ a })
+    )
+    const input = { a: 1 }
+    U.strictEqual(pipe(sa, _.modify(identity))(input), input)
   })
 
   it('fromNullable', () => {

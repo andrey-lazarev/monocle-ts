@@ -1,3 +1,4 @@
+import { identity } from 'fp-ts/lib/function'
 import * as Id from 'fp-ts/lib/Identity'
 import * as O from 'fp-ts/lib/Option'
 import { pipe } from 'fp-ts/lib/pipeable'
@@ -243,9 +244,38 @@ describe('Optional', () => {
     U.deepStrictEqual(f([-1, 2, 3]), O.none)
   })
 
+  it('modify', () => {
+    // same reference check
+    const sa = pipe(_.id<ReadonlyArray<number>>(), _.index(0))
+    const input = [1, 2]
+    U.strictEqual(pipe(sa, _.modify(identity))(input), input)
+  })
+
+  it('modifyOption', () => {
+    // same reference check
+    const sa = pipe(_.id<ReadonlyArray<number>>(), _.index(0))
+    const input = [1, 2]
+    U.strictEqual(
+      pipe(
+        pipe(sa, _.modifyOption(identity))(input),
+        O.exists((x) => x === input)
+      ),
+      true
+    )
+  })
+
   it('setOption', () => {
     const sa = pipe(_.id<ReadonlyArray<number>>(), _.index(0))
     U.deepStrictEqual(pipe(sa, _.setOption(2))([]), O.none)
     U.deepStrictEqual(pipe(sa, _.setOption(2))([1, 3]), O.some([2, 3]))
+    // same reference check
+    const input = [1, 2]
+    U.strictEqual(
+      pipe(
+        pipe(sa, _.setOption(1))(input),
+        O.exists((x) => x === input)
+      ),
+      true
+    )
   })
 })

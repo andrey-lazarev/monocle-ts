@@ -179,7 +179,10 @@ export function modifyF<F extends URIS>(
 ): <A>(f: (a: A) => Kind<F, A>) => <S>(sa: Iso<S, A>) => (s: S) => Kind<F, S>
 export function modifyF<F>(F: Functor<F>): <A>(f: (a: A) => HKT<F, A>) => <S>(sa: Iso<S, A>) => (s: S) => HKT<F, S>
 export function modifyF<F>(F: Functor<F>): <A>(f: (a: A) => HKT<F, A>) => <S>(sa: Iso<S, A>) => (s: S) => HKT<F, S> {
-  return (f) => (sa) => (s) => pipe(sa.get(s), f, (fa) => F.map(fa, sa.reverseGet))
+  return (f) => (sa) => (s) => {
+    const o = sa.get(s)
+    return pipe(o, f, (fa) => F.map(fa, (n) => (n === o ? s : sa.reverseGet(n))))
+  }
 }
 
 /**

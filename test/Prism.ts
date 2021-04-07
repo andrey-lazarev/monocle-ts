@@ -77,9 +77,7 @@ describe('Prism', () => {
     U.deepStrictEqual(ss.reverseGet(leaf), leaf)
   })
 
-  it('set', () => {
-    U.strictEqual(pipe(value, _.set(2))(leaf), leaf)
-    U.deepStrictEqual(pipe(value, _.set(2))(node(1, leaf, leaf)), node(2, leaf, leaf))
+  it('modifyF', () => {
     // same reference check
     interface S {
       readonly a: number
@@ -89,7 +87,7 @@ describe('Prism', () => {
       (s) => O.some(s.a),
       (a) => ({ a })
     )
-    U.strictEqual(pipe(sa, _.set(1))(input), input)
+    U.strictEqual(pipe(sa, _.modifyF(Id.identity)(identity))(input), input)
   })
 
   it('modify', () => {
@@ -118,6 +116,37 @@ describe('Prism', () => {
     )
     U.deepStrictEqual(modifyOption(leaf), O.none)
     U.deepStrictEqual(modifyOption(node(1, leaf, leaf)), O.some(node(2, leaf, leaf)))
+    // same reference check
+    interface S {
+      readonly a: number
+    }
+    const input = { a: 1 }
+    const sa: _.Prism<S, number> = _.prism(
+      (s) => O.some(s.a),
+      (a) => ({ a })
+    )
+    U.strictEqual(
+      pipe(
+        pipe(sa, _.modifyOption(identity))(input),
+        O.exists((x) => x === input)
+      ),
+      true
+    )
+  })
+
+  it('set', () => {
+    U.strictEqual(pipe(value, _.set(2))(leaf), leaf)
+    U.deepStrictEqual(pipe(value, _.set(2))(node(1, leaf, leaf)), node(2, leaf, leaf))
+    // same reference check
+    interface S {
+      readonly a: number
+    }
+    const input = { a: 1 }
+    const sa: _.Prism<S, number> = _.prism(
+      (s) => O.some(s.a),
+      (a) => ({ a })
+    )
+    U.strictEqual(pipe(sa, _.set(1))(input), input)
   })
 
   it('prop', () => {

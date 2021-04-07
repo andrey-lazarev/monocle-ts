@@ -74,6 +74,19 @@ describe('Lens', () => {
     U.strictEqual(sa.set(1)(s), s)
   })
 
+  it('modifyF', () => {
+    // same reference check
+    interface S {
+      readonly a: number
+    }
+    const input = { a: 1 }
+    const sa: _.Lens<S, number> = _.lens(
+      (s) => s.a,
+      (a) => (s) => ({ ...s, a })
+    )
+    U.strictEqual(pipe(sa, _.modifyF(Id.identity)(identity))(input), input)
+  })
+
   it('modify', () => {
     interface S {
       readonly a: number
