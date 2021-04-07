@@ -22,7 +22,7 @@
 import { Applicative, Applicative1, Applicative2, Applicative3 } from 'fp-ts/lib/Applicative'
 import { Category2 } from 'fp-ts/lib/Category'
 import { Either } from 'fp-ts/lib/Either'
-import { constant, flow, Predicate, Refinement } from 'fp-ts/lib/function'
+import { constant, Endomorphism, flow, Predicate, Refinement } from 'fp-ts/lib/function'
 import { HKT, Kind, Kind2, Kind3, URIS, URIS2, URIS3 } from 'fp-ts/lib/HKT'
 import { Invariant2 } from 'fp-ts/lib/Invariant'
 import * as O from 'fp-ts/lib/Option'
@@ -49,7 +49,7 @@ import Option = O.Option
  */
 export interface Optional<S, A> {
   readonly getOption: (s: S) => Option<A>
-  readonly set: (a: A) => (s: S) => S
+  readonly set: (a: A) => Endomorphism<S>
 }
 
 // -------------------------------------------------------------------------------------
@@ -147,25 +147,6 @@ export const composeTraversal = <A, B>(ab: Traversal<A, B>): (<S>(sa: Optional<S
 
 /**
  * @category combinators
- * @since 2.3.0
- */
-export const modifyOption: <A>(f: (a: A) => A) => <S>(optional: Optional<S, A>) => (s: S) => Option<S> =
-  _.optionalModifyOption
-
-/**
- * @category combinators
- * @since 2.3.7
- */
-export const setOption = <A>(a: A): (<S>(optional: Optional<S, A>) => (s: S) => Option<S>) => modifyOption(() => a)
-
-/**
- * @category combinators
- * @since 2.3.0
- */
-export const modify: <A>(f: (a: A) => A) => <S>(optional: Optional<S, A>) => (s: S) => S = _.optionalModify
-
-/**
- * @category combinators
  * @since 2.3.5
  */
 export function modifyF<F extends URIS3>(
@@ -183,15 +164,27 @@ export function modifyF<F>(
 export function modifyF<F>(
   F: Applicative<F>
 ): <A>(f: (a: A) => HKT<F, A>) => <S>(sa: Optional<S, A>) => (s: S) => HKT<F, S> {
-  return (f) => (sa) => (s) =>
-    pipe(
-      sa.getOption(s),
-      O.fold(
-        () => F.of(s),
-        (a) => F.map(f(a), (a) => sa.set(a)(s))
-      )
-    )
+  return (f) => (sa) => _.optionalAsTraversal(sa).modifyF(F)(f)
 }
+
+/**
+ * @category combinators
+ * @since 2.3.0
+ */
+export const modifyOption: <A>(f: Endomorphism<A>) => <S>(optional: Optional<S, A>) => (s: S) => Option<S> =
+  _.optionalModifyOption
+
+/**
+ * @category combinators
+ * @since 2.3.7
+ */
+export const setOption = <A>(a: A): (<S>(optional: Optional<S, A>) => (s: S) => Option<S>) => modifyOption(() => a)
+
+/**
+ * @category combinators
+ * @since 2.3.0
+ */
+export const modify: <A>(f: Endomorphism<A>) => <S>(optional: Optional<S, A>) => Endomorphism<S> = _.optionalModify
 
 /**
  * Return an `Optional` from a `Optional` focused on a nullable value.
@@ -226,12 +219,12 @@ export const prop = <A, P extends keyof A>(prop: P): (<S>(sa: Optional<S, A>) =>
  * Return a `Optional` from a `Optional` and a list of props.
  *
  * @category combinators
- * @since 2.3.0
+ * @since 2.3.10
  */
-export const props = <A, P extends keyof A>(
+export const pick = <A, P extends keyof A>(
   ...props: readonly [P, P, ...ReadonlyArray<P>]
-): (<S>(sa: Optional<S, A>) => Optional<S, { [K in P]: A[K] }>) =>
-  compose(pipe(_.lensId<A>(), _.lensProps(...props), _.lensAsOptional))
+): (<S>(sa: Optional<S, A>) => Optional<S, { readonly [K in P]: A[K] }>) =>
+  compose(pipe(_.lensId<A>(), _.lensPick(...props), _.lensAsOptional))
 
 /**
  * Return a `Optional` from a `Optional` focused on a component of a tuple.

@@ -39,8 +39,8 @@ Added in v2.3.0
   - [key](#key)
   - [left](#left)
   - [modify](#modify)
+  - [pick](#pick)
   - [prop](#prop)
-  - [props](#props)
   - [right](#right)
   - [set](#set)
   - [some](#some)
@@ -244,10 +244,26 @@ Added in v2.3.0
 **Signature**
 
 ```ts
-export declare const modify: <A>(f: (a: A) => A) => <S>(sa: Traversal<S, A>) => (s: S) => S
+export declare const modify: <A>(f: Endomorphism<A>) => <S>(sa: Traversal<S, A>) => Endomorphism<S>
 ```
 
 Added in v2.3.0
+
+## pick
+
+Return a `Traversal` from a `Traversal` and a list of props.
+
+**Signature**
+
+```ts
+export declare const pick: <A, P extends keyof A>(
+  props_0: P,
+  props_1: P,
+  ...props_2: P[]
+) => <S>(sa: Traversal<S, A>) => Traversal<S, { readonly [K in P]: A[K] }>
+```
+
+Added in v2.3.10
 
 ## prop
 
@@ -257,22 +273,6 @@ Return a `Traversal` from a `Traversal` and a prop.
 
 ```ts
 export declare const prop: <A, P extends keyof A>(prop: P) => <S>(sa: Traversal<S, A>) => Traversal<S, A[P]>
-```
-
-Added in v2.3.0
-
-## props
-
-Return a `Traversal` from a `Traversal` and a list of props.
-
-**Signature**
-
-```ts
-export declare const props: <A, P extends keyof A>(
-  props_0: P,
-  props_1: P,
-  ...props_2: P[]
-) => <S>(sa: Traversal<S, A>) => Traversal<S, { [K in P]: A[K] }>
 ```
 
 Added in v2.3.0
@@ -294,7 +294,7 @@ Added in v2.3.0
 **Signature**
 
 ```ts
-export declare const set: <A>(a: A) => <S>(sa: Traversal<S, A>) => (s: S) => S
+export declare const set: <A>(a: A) => <S>(sa: Traversal<S, A>) => Endomorphism<S>
 ```
 
 Added in v2.3.0
@@ -319,14 +319,14 @@ Return a `Traversal` from a `Traversal` focused on a `Traversable`.
 
 ```ts
 export declare const traverse: <T extends
+  | 'Ord'
   | 'Option'
   | 'ReadonlyRecord'
-  | 'Ord'
   | 'Eq'
-  | 'ReadonlyNonEmptyArray'
-  | 'ReadonlyArray'
   | 'Identity'
+  | 'ReadonlyNonEmptyArray'
   | 'NonEmptyArray'
+  | 'ReadonlyArray'
   | 'Array'
   | 'Record'>(
   T: Traversable1<T>
@@ -426,23 +426,23 @@ export declare const fromTraversable: {
       | 'monocle-ts/Lens'
       | 'monocle-ts/Optional'
       | 'monocle-ts/Prism'
+      | 'monocle-ts/Traversal'
       | 'Either'
       | 'ReadonlyMap'
       | 'Const'
-      | 'monocle-ts/Traversal'
   >(
     T: Traversable2<T>
   ): <E, A>() => Traversal<Kind2<T, E, A>, A>
   <
     T extends
+      | 'Ord'
       | 'Option'
       | 'ReadonlyRecord'
-      | 'Ord'
       | 'Eq'
-      | 'ReadonlyNonEmptyArray'
-      | 'ReadonlyArray'
       | 'Identity'
+      | 'ReadonlyNonEmptyArray'
       | 'NonEmptyArray'
+      | 'ReadonlyArray'
       | 'Array'
       | 'Record'
   >(

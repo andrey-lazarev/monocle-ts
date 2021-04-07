@@ -17,7 +17,7 @@ import { Applicative, Applicative1, Applicative2, Applicative2C, Applicative3 } 
 import { Category2 } from 'fp-ts/lib/Category'
 import * as C from 'fp-ts/lib/Const'
 import { Either } from 'fp-ts/lib/Either'
-import { flow, identity, Predicate, Refinement } from 'fp-ts/lib/function'
+import { Endomorphism, flow, identity, Predicate, Refinement } from 'fp-ts/lib/function'
 import { HKT, Kind, Kind2, Kind3, URIS, URIS2, URIS3 } from 'fp-ts/lib/HKT'
 import * as I from 'fp-ts/lib/Identity'
 import { Monoid } from 'fp-ts/lib/Monoid'
@@ -156,7 +156,7 @@ export const composeOptional: <A, B>(ab: Optional<A, B>) => <S>(sa: Traversal<S,
  * @category combinators
  * @since 2.3.0
  */
-export const modify = <A>(f: (a: A) => A) => <S>(sa: Traversal<S, A>): ((s: S) => S) => {
+export const modify = <A>(f: Endomorphism<A>) => <S>(sa: Traversal<S, A>): Endomorphism<S> => {
   return sa.modifyF(I.identity)(f)
 }
 
@@ -164,7 +164,7 @@ export const modify = <A>(f: (a: A) => A) => <S>(sa: Traversal<S, A>): ((s: S) =
  * @category combinators
  * @since 2.3.0
  */
-export const set = <A>(a: A): (<S>(sa: Traversal<S, A>) => (s: S) => S) => {
+export const set = <A>(a: A): (<S>(sa: Traversal<S, A>) => Endomorphism<S>) => {
   return modify(() => a)
 }
 
@@ -200,12 +200,12 @@ export const prop = <A, P extends keyof A>(prop: P): (<S>(sa: Traversal<S, A>) =
  * Return a `Traversal` from a `Traversal` and a list of props.
  *
  * @category combinators
- * @since 2.3.0
+ * @since 2.3.10
  */
-export const props = <A, P extends keyof A>(
+export const pick = <A, P extends keyof A>(
   ...props: readonly [P, P, ...ReadonlyArray<P>]
-): (<S>(sa: Traversal<S, A>) => Traversal<S, { [K in P]: A[K] }>) =>
-  compose(pipe(_.lensId<A>(), _.lensProps(...props), _.lensAsTraversal))
+): (<S>(sa: Traversal<S, A>) => Traversal<S, { readonly [K in P]: A[K] }>) =>
+  compose(pipe(_.lensId<A>(), _.lensPick(...props), _.lensAsTraversal))
 
 /**
  * Return a `Traversal` from a `Traversal` focused on a component of a tuple.

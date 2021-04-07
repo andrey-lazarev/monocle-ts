@@ -16,7 +16,7 @@
  */
 import { Category2 } from 'fp-ts/lib/Category'
 import { Either } from 'fp-ts/lib/Either'
-import { flow, identity, Predicate, Refinement } from 'fp-ts/lib/function'
+import { Endomorphism, flow, identity, Predicate, Refinement } from 'fp-ts/lib/function'
 import { Functor, Functor1, Functor2, Functor3 } from 'fp-ts/lib/Functor'
 import { HKT, Kind, Kind2, Kind3, URIS, URIS2, URIS3 } from 'fp-ts/lib/HKT'
 import { Invariant2 } from 'fp-ts/lib/Invariant'
@@ -166,12 +166,6 @@ export const reverse = <S, A>(sa: Iso<S, A>): Iso<A, S> => iso(sa.reverseGet, sa
 
 /**
  * @category combinators
- * @since 2.3.0
- */
-export const modify = <A>(f: (a: A) => A) => <S>(sa: Iso<S, A>) => (s: S): S => sa.reverseGet(f(sa.get(s)))
-
-/**
- * @category combinators
  * @since 2.3.5
  */
 export function modifyF<F extends URIS3>(
@@ -187,6 +181,14 @@ export function modifyF<F>(F: Functor<F>): <A>(f: (a: A) => HKT<F, A>) => <S>(sa
 export function modifyF<F>(F: Functor<F>): <A>(f: (a: A) => HKT<F, A>) => <S>(sa: Iso<S, A>) => (s: S) => HKT<F, S> {
   return (f) => (sa) => (s) => pipe(sa.get(s), f, (fa) => F.map(fa, sa.reverseGet))
 }
+
+/**
+ * @category combinators
+ * @since 2.3.0
+ */
+export const modify: <A>(f: Endomorphism<A>) => <S>(sa: Iso<S, A>) => Endomorphism<S> =
+  /*#__PURE__*/
+  modifyF(_.IdentityFunctor)
 
 /**
  * Return a `Prism` from a `Iso` focused on a nullable value.
@@ -220,11 +222,11 @@ export const prop = <A, P extends keyof A>(prop: P): (<S>(sa: Iso<S, A>) => Lens
  * Return a `Lens` from a `Iso` and a list of props.
  *
  * @category combinators
- * @since 2.3.8
+ * @since 2.3.10
  */
-export const props = <A, P extends keyof A>(
+export const pick = <A, P extends keyof A>(
   ...props: readonly [P, P, ...ReadonlyArray<P>]
-): (<S>(sa: Iso<S, A>) => Lens<S, { [K in P]: A[K] }>) => flow(asLens, _.lensProps(...props))
+): (<S>(sa: Iso<S, A>) => Lens<S, { readonly [K in P]: A[K] }>) => flow(asLens, _.lensPick(...props))
 
 /**
  * Return a `Lens` from a `Iso` focused on a component of a tuple.

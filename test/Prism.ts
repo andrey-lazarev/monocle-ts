@@ -1,5 +1,6 @@
 import * as assert from 'assert'
 import * as E from 'fp-ts/lib/Either'
+import { identity } from 'fp-ts/lib/function'
 import * as Id from 'fp-ts/lib/Identity'
 import * as O from 'fp-ts/lib/Option'
 import { pipe } from 'fp-ts/lib/pipeable'
@@ -77,13 +78,38 @@ describe('Prism', () => {
     U.deepStrictEqual(ss.reverseGet(leaf), leaf)
   })
 
+  it('set', () => {
+    U.strictEqual(pipe(value, _.set(2))(leaf), leaf)
+    U.deepStrictEqual(pipe(value, _.set(2))(node(1, leaf, leaf)), node(2, leaf, leaf))
+    // should return the same reference if nothing changed
+    interface S {
+      readonly a: number
+    }
+    const input = { a: 1 }
+    const sa: _.Prism<S, number> = _.prism(
+      (s) => O.some(s.a),
+      (a) => ({ a })
+    )
+    U.strictEqual(pipe(sa, _.set(1))(input), input)
+  })
+
   it('modify', () => {
     const modify = pipe(
       value,
       _.modify((value) => value * 2)
     )
-    U.deepStrictEqual(modify(leaf), leaf)
+    U.strictEqual(modify(leaf), leaf)
     U.deepStrictEqual(modify(node(1, leaf, leaf)), node(2, leaf, leaf))
+    // should return the same reference if nothing changed
+    interface S {
+      readonly a: number
+    }
+    const input = { a: 1 }
+    const sa: _.Prism<S, number> = _.prism(
+      (s) => O.some(s.a),
+      (a) => ({ a })
+    )
+    U.strictEqual(pipe(sa, _.modify(identity))(input), input)
   })
 
   it('modifyOption', () => {
@@ -105,13 +131,13 @@ describe('Prism', () => {
     U.deepStrictEqual(sa.getOption(O.some({ a: 'a', b: 1 })), O.some('a'))
   })
 
-  it('props', () => {
+  it('pick', () => {
     type S = O.Option<{
       readonly a: string
       readonly b: number
       readonly c: boolean
     }>
-    const sa = pipe(_.id<S>(), _.some, _.props('a', 'b'))
+    const sa = pipe(_.id<S>(), _.some, _.pick('a', 'b'))
     U.deepStrictEqual(sa.getOption(O.none), O.none)
     U.deepStrictEqual(sa.getOption(O.some({ a: 'a', b: 1, c: true })), O.some({ a: 'a', b: 1 }))
   })

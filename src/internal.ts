@@ -8,23 +8,31 @@
  * @since 2.3.0
  */
 import { Applicative } from 'fp-ts/lib/Applicative'
+import * as E from 'fp-ts/lib/Either'
+import { constant, Endomorphism, flow, identity, Predicate } from 'fp-ts/lib/function'
+import { Functor1 } from 'fp-ts/lib/Functor'
+import { HKT, Kind, Kind2, Kind3, URIS, URIS2, URIS3 } from 'fp-ts/lib/HKT'
+import * as I from 'fp-ts/lib/Identity'
+import { NonEmptyArray } from 'fp-ts/lib/NonEmptyArray'
+import * as O from 'fp-ts/lib/Option'
+import { pipe } from 'fp-ts/lib/pipeable'
 import * as RA from 'fp-ts/lib/ReadonlyArray'
 import * as RNEA from 'fp-ts/lib/ReadonlyNonEmptyArray'
 import * as RR from 'fp-ts/lib/ReadonlyRecord'
-import { constant, flow, identity, Predicate } from 'fp-ts/lib/function'
-import { HKT, Kind, Kind2, Kind3, URIS, URIS2, URIS3 } from 'fp-ts/lib/HKT'
-import * as O from 'fp-ts/lib/Option'
-import * as E from 'fp-ts/lib/Either'
-import { pipe } from 'fp-ts/lib/pipeable'
 import { Traversable, Traversable1, Traversable2, Traversable3 } from 'fp-ts/lib/Traversable'
+import { At } from './At'
 import { Iso } from './Iso'
 import { Index } from './Ix'
 import { Lens } from './Lens'
 import { Optional } from './Optional'
 import { Prism } from './Prism'
 import { Traversal } from './Traversal'
-import { At } from './At'
-import { NonEmptyArray } from 'fp-ts/lib/NonEmptyArray'
+
+/** @internal */
+export const IdentityFunctor: Functor1<I.URI> = {
+  URI: I.URI,
+  map: (fa, f) => f(fa)
+}
 
 // -------------------------------------------------------------------------------------
 // Iso
@@ -98,9 +106,9 @@ export const lensProp = <A, P extends keyof A>(prop: P) => <S>(sa: Lens<S, A>): 
   )
 
 /** @internal */
-export const lensProps = <A, P extends keyof A>(...props: readonly [P, P, ...ReadonlyArray<P>]) => <S>(
+export const lensPick = <A, P extends keyof A>(...props: readonly [P, P, ...ReadonlyArray<P>]) => <S>(
   sa: Lens<S, A>
-): Lens<S, { [K in P]: A[K] }> =>
+): Lens<S, { readonly [K in P]: A[K] }> =>
   lens(
     (s) => {
       const a = sa.get(s)
@@ -153,7 +161,13 @@ export const prism = <S, A>(
 ): Prism<S, A> => ({ getOption, reverseGet })
 
 /** @internal */
-export const prismAsOptional = <S, A>(sa: Prism<S, A>): Optional<S, A> => optional(sa.getOption, (a) => prismSet(a)(sa))
+export const prismAsOptional = <S, A>(sa: Prism<S, A>): Optional<S, A> =>
+  optional(sa.getOption, (a) => (s) =>
+    pipe(
+      prismModifyOption(() => a)(sa)(s),
+      O.getOrElse(() => s)
+    )
+  )
 
 /** @internal */
 export const prismAsTraversal = <S, A>(sa: Prism<S, A>): Traversal<S, A> =>
@@ -162,19 +176,9 @@ export const prismAsTraversal = <S, A>(sa: Prism<S, A>): Traversal<S, A> =>
       sa.getOption(s),
       O.fold(
         () => F.of(s),
-        (a) => F.map(f(a), (a) => prismSet(a)(sa)(s))
+        (o) => F.map(f(o), (n) => (n === o ? s : sa.reverseGet(n)))
       )
     )
-  )
-
-/** @internal */
-export const prismModifyOption = <A>(f: (a: A) => A) => <S>(sa: Prism<S, A>) => (s: S): O.Option<S> =>
-  pipe(
-    sa.getOption(s),
-    O.map((o) => {
-      const n = f(o)
-      return n === o ? s : sa.reverseGet(n)
-    })
   )
 
 /** @internal */
@@ -188,7 +192,14 @@ export const prismModify = <A>(f: (a: A) => A) => <S>(sa: Prism<S, A>): ((s: S) 
 }
 
 /** @internal */
-export const prismSet = <A>(a: A): (<S>(sa: Prism<S, A>) => (s: S) => S) => prismModify(() => a)
+export const prismModifyOption = <A>(f: Endomorphism<A>) => <S>(sa: Prism<S, A>) => (s: S): O.Option<S> =>
+  pipe(
+    sa.getOption(s),
+    O.map((o) => {
+      const n = f(o)
+      return n === o ? s : sa.reverseGet(n)
+    })
+  )
 
 /** @internal */
 export const prismComposeLens = <A, B>(ab: Lens<A, B>) => <S>(sa: Prism<S, A>): Optional<S, B> =>
@@ -237,7 +248,7 @@ export const optionalAsTraversal = <S, A>(sa: Optional<S, A>): Traversal<S, A> =
   )
 
 /** @internal */
-export const optionalModifyOption = <A>(f: (a: A) => A) => <S>(optional: Optional<S, A>) => (s: S): O.Option<S> =>
+export const optionalModifyOption = <A>(f: Endomorphism<A>) => <S>(optional: Optional<S, A>) => (s: S): O.Option<S> =>
   pipe(
     optional.getOption(s),
     O.map((a) => {
@@ -247,7 +258,7 @@ export const optionalModifyOption = <A>(f: (a: A) => A) => <S>(optional: Optiona
   )
 
 /** @internal */
-export const optionalModify = <A>(f: (a: A) => A) => <S>(optional: Optional<S, A>): ((s: S) => S) => {
+export const optionalModify = <A>(f: Endomorphism<A>) => <S>(optional: Optional<S, A>): Endomorphism<S> => {
   const g = optionalModifyOption(f)(optional)
   return (s) =>
     pipe(

@@ -17,7 +17,7 @@
 import { Applicative, Applicative1, Applicative2, Applicative3 } from 'fp-ts/lib/Applicative'
 import { Category2 } from 'fp-ts/lib/Category'
 import { Either } from 'fp-ts/lib/Either'
-import { flow, identity, Predicate, Refinement } from 'fp-ts/lib/function'
+import { Endomorphism, flow, identity, Predicate, Refinement } from 'fp-ts/lib/function'
 import { HKT, Kind, Kind2, Kind3, URIS, URIS2, URIS3 } from 'fp-ts/lib/HKT'
 import { Invariant2 } from 'fp-ts/lib/Invariant'
 import * as O from 'fp-ts/lib/Option'
@@ -39,6 +39,10 @@ import { Traversal } from './Traversal'
 import Option = O.Option
 
 /**
+ * Laws:
+ * 1. `pipe(getOption(s), fold(() => s, reverseGet)) = s`
+ * 2. `getOption(reverseGet(a)) = some(a)`
+ *
  * @category model
  * @since 2.3.0
  */
@@ -155,25 +159,7 @@ export const composeTraversal = <A, B>(ab: Traversal<A, B>): (<S>(sa: Prism<S, A
 
 /**
  * @category combinators
- * @since 2.3.0
- */
-export const set: <A>(a: A) => <S>(sa: Prism<S, A>) => (s: S) => S = _.prismSet
-
-/**
- * @category combinators
- * @since 2.3.0
- */
-export const modifyOption: <A>(f: (a: A) => A) => <S>(sa: Prism<S, A>) => (s: S) => Option<S> = _.prismModifyOption
-
-/**
- * @category combinators
- * @since 2.3.0
- */
-export const modify: <A>(f: (a: A) => A) => <S>(sa: Prism<S, A>) => (s: S) => S = _.prismModify
-
-/**
- * @category combinators
- * @since 2.3.5
+ * @since 2.3.10
  */
 export function modifyF<F extends URIS3>(
   F: Applicative3<F>
@@ -190,15 +176,26 @@ export function modifyF<F>(
 export function modifyF<F>(
   F: Applicative<F>
 ): <A>(f: (a: A) => HKT<F, A>) => <S>(sa: Prism<S, A>) => (s: S) => HKT<F, S> {
-  return (f) => (sa) => (s) =>
-    pipe(
-      sa.getOption(s),
-      O.fold(
-        () => F.of(s),
-        (a) => F.map(f(a), sa.reverseGet)
-      )
-    )
+  return (f) => (sa) => _.prismAsTraversal(sa).modifyF(F)(f)
 }
+
+/**
+ * @category combinators
+ * @since 2.3.0
+ */
+export const modify: <A>(f: (a: A) => A) => <S>(sa: Prism<S, A>) => (s: S) => S = _.prismModify
+
+/**
+ * @category combinators
+ * @since 2.3.0
+ */
+export const modifyOption: <A>(f: Endomorphism<A>) => <S>(sa: Prism<S, A>) => (s: S) => Option<S> = _.prismModifyOption
+
+/**
+ * @category combinators
+ * @since 2.3.0
+ */
+export const set = <A>(a: A): (<S>(sa: Prism<S, A>) => Endomorphism<S>) => modify(() => a)
 
 /**
  * Return a `Prism` from a `Prism` focused on a nullable value.
@@ -233,11 +230,12 @@ export const prop = <A, P extends keyof A>(prop: P): (<S>(sa: Prism<S, A>) => Op
  * Return a `Optional` from a `Prism` and a list of props.
  *
  * @category combinators
- * @since 2.3.0
+ * @since 2.3.10
  */
-export const props = <A, P extends keyof A>(
+export const pick = <A, P extends keyof A>(
   ...props: readonly [P, P, ...ReadonlyArray<P>]
-): (<S>(sa: Prism<S, A>) => Optional<S, { [K in P]: A[K] }>) => composeLens(pipe(_.lensId<A>(), _.lensProps(...props)))
+): (<S>(sa: Prism<S, A>) => Optional<S, { readonly [K in P]: A[K] }>) =>
+  composeLens(pipe(_.lensId<A>(), _.lensPick(...props)))
 
 /**
  * Return a `Optional` from a `Prism` focused on a component of a tuple.

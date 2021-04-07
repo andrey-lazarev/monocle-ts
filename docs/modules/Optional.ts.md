@@ -46,8 +46,8 @@ Added in v2.3.0
   - [modify](#modify)
   - [modifyF](#modifyf)
   - [modifyOption](#modifyoption)
+  - [pick](#pick)
   - [prop](#prop)
-  - [props](#props)
   - [right](#right)
   - [setOption](#setoption)
   - [some](#some)
@@ -221,7 +221,7 @@ Added in v2.3.0
 **Signature**
 
 ```ts
-export declare const modify: <A>(f: (a: A) => A) => <S>(optional: Optional<S, A>) => (s: S) => S
+export declare const modify: <A>(f: Endomorphism<A>) => <S>(optional: Optional<S, A>) => Endomorphism<S>
 ```
 
 Added in v2.3.0
@@ -252,10 +252,26 @@ Added in v2.3.5
 **Signature**
 
 ```ts
-export declare const modifyOption: <A>(f: (a: A) => A) => <S>(optional: Optional<S, A>) => (s: S) => O.Option<S>
+export declare const modifyOption: <A>(f: Endomorphism<A>) => <S>(optional: Optional<S, A>) => (s: S) => O.Option<S>
 ```
 
 Added in v2.3.0
+
+## pick
+
+Return a `Optional` from a `Optional` and a list of props.
+
+**Signature**
+
+```ts
+export declare const pick: <A, P extends keyof A>(
+  props_0: P,
+  props_1: P,
+  ...props_2: P[]
+) => <S>(sa: Optional<S, A>) => Optional<S, { readonly [K in P]: A[K] }>
+```
+
+Added in v2.3.10
 
 ## prop
 
@@ -265,22 +281,6 @@ Return a `Optional` from a `Optional` and a prop.
 
 ```ts
 export declare const prop: <A, P extends keyof A>(prop: P) => <S>(sa: Optional<S, A>) => Optional<S, A[P]>
-```
-
-Added in v2.3.0
-
-## props
-
-Return a `Optional` from a `Optional` and a list of props.
-
-**Signature**
-
-```ts
-export declare const props: <A, P extends keyof A>(
-  props_0: P,
-  props_1: P,
-  ...props_2: P[]
-) => <S>(sa: Optional<S, A>) => Optional<S, { [K in P]: A[K] }>
 ```
 
 Added in v2.3.0
@@ -424,7 +424,10 @@ Added in v2.3.0
 **Signature**
 
 ```ts
-export declare const optional: <S, A>(getOption: (s: S) => O.Option<A>, set: (a: A) => (s: S) => S) => Optional<S, A>
+export declare const optional: <S, A>(
+  getOption: (s: S) => O.Option<A>,
+  set: (a: A) => Endomorphism<S>
+) => Optional<S, A>
 ```
 
 Added in v2.3.8
@@ -504,7 +507,7 @@ Added in v2.3.0
 ```ts
 export interface Optional<S, A> {
   readonly getOption: (s: S) => Option<A>
-  readonly set: (a: A) => (s: S) => S
+  readonly set: (a: A) => Endomorphism<S>
 }
 ```
 

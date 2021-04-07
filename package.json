@@ -1,6 +1,6 @@
 {
   "name": "monocle-ts",
-  "version": "2.3.9",
+  "version": "2.3.10",
   "description": "A porting of scala monocle library to TypeScript",
   "main": "lib/index.js",
   "module": "es6/index.js",
@@ -46,7 +46,7 @@
     "@types/node": "^13.11.0",
     "docs-ts": "^0.6.2",
     "dtslint": "github:gcanti/dtslint",
-    "fp-ts": "^2.9.5",
+    "fp-ts": "^2.5.0",
     "import-path-rewrite": "github:gcanti/import-path-rewrite",
     "jest": "^24.3.0",
     "mocha": "^5.2.0",

@@ -4,7 +4,7 @@
 import { getMonoid } from 'fp-ts/lib/Array'
 import { getApplicative, make } from 'fp-ts/lib/Const'
 import { Foldable, Foldable1, Foldable2, Foldable3 } from 'fp-ts/lib/Foldable'
-import { constant, identity, Predicate, Refinement } from 'fp-ts/lib/function'
+import { constant, Endomorphism, identity, Predicate, Refinement } from 'fp-ts/lib/function'
 import { HKT, Kind, Kind2, Kind3, URIS, URIS2, URIS3 } from 'fp-ts/lib/HKT'
 import { Monoid, monoidAll, monoidAny } from 'fp-ts/lib/Monoid'
 import { fromNullable, fromPredicate, getFirstMonoid, isNone, Option, option, some } from 'fp-ts/lib/Option'
@@ -112,7 +112,7 @@ export class Iso<S, A> {
   /**
    * @since 1.0.0
    */
-  modify(f: (a: A) => A): (s: S) => S {
+  modify(f: Endomorphism<A>): Endomorphism<S> {
     return iso.modify(f)(this)
   }
 
@@ -296,7 +296,7 @@ export class Lens<S, A> {
    * @since 1.0.0
    */
   readonly _tag: 'Lens' = 'Lens'
-  constructor(readonly get: (s: S) => A, readonly set: (a: A) => (s: S) => S) {}
+  constructor(readonly get: (s: S) => A, readonly set: (a: A) => Endomorphism<S>) {}
 
   /**
    * @example
@@ -374,7 +374,7 @@ export class Lens<S, A> {
    */
   static fromProps<S>(): <P extends keyof S>(props: Array<P>) => Lens<S, { [K in P]: S[K] }>
   static fromProps<S>(): <P extends keyof S>(props: [P, P, ...Array<P>]) => Lens<S, { [K in P]: S[K] }> {
-    return (props) => fromLens(pipe(lens.id<S>(), lens.props(...props)))
+    return (props) => fromLens(pipe(lens.id<S>(), lens.pick(...props)))
   }
 
   /**
@@ -424,7 +424,7 @@ export class Lens<S, A> {
   /**
    * @since 1.0.0
    */
-  modify(f: (a: A) => A): (s: S) => S {
+  modify(f: Endomorphism<A>): Endomorphism<S> {
     return lens.modify(f)(this)
   }
 
@@ -589,7 +589,7 @@ export class Prism<S, A> {
   /**
    * @since 1.0.0
    */
-  modify(f: (a: A) => A): (s: S) => S {
+  modify(f: Endomorphism<A>): Endomorphism<S> {
     return (s) => {
       const os = this.modifyOption(f)(s)
       if (isNone(os)) {
@@ -603,7 +603,7 @@ export class Prism<S, A> {
   /**
    * @since 1.0.0
    */
-  modifyOption(f: (a: A) => A): (s: S) => Option<S> {
+  modifyOption(f: Endomorphism<A>): (s: S) => Option<S> {
     return (s) =>
       option.map(this.getOption(s), (v) => {
         const n = f(v)
@@ -616,7 +616,7 @@ export class Prism<S, A> {
    *
    * @since 1.0.0
    */
-  set(a: A): (s: S) => S {
+  set(a: A): Endomorphism<S> {
     return this.modify(() => a)
   }
 
@@ -795,7 +795,7 @@ export class Optional<S, A> {
    * @since 1.0.0
    */
   readonly _tag: 'Optional' = 'Optional'
-  constructor(readonly getOption: (s: S) => Option<A>, readonly set: (a: A) => (s: S) => S) {}
+  constructor(readonly getOption: (s: S) => Option<A>, readonly set: (a: A) => Endomorphism<S>) {}
 
   /**
    * Returns an `Optional` from a nullable (`A | null | undefined`) prop
@@ -901,14 +901,14 @@ export class Optional<S, A> {
   /**
    * @since 1.0.0
    */
-  modify(f: (a: A) => A): (s: S) => S {
+  modify(f: Endomorphism<A>): Endomorphism<S> {
     return optional.modify(f)(this)
   }
 
   /**
    * @since 1.0.0
    */
-  modifyOption(f: (a: A) => A): (s: S) => Option<S> {
+  modifyOption(f: Endomorphism<A>): (s: S) => Option<S> {
     return optional.modifyOption(f)(this)
   }
 
@@ -1046,14 +1046,14 @@ export class Traversal<S, A> {
   /**
    * @since 1.0.0
    */
-  modify(f: (a: A) => A): (s: S) => S {
+  modify(f: Endomorphism<A>): Endomorphism<S> {
     return traversal.modify(f)(this)
   }
 
   /**
    * @since 1.0.0
    */
-  set(a: A): (s: S) => S {
+  set(a: A): Endomorphism<S> {
     return traversal.set(a)(this)
   }
 
@@ -1465,12 +1465,12 @@ export class Setter<S, A> {
    * @since 1.0.0
    */
   readonly _tag: 'Setter' = 'Setter'
-  constructor(readonly modify: (f: (a: A) => A) => (s: S) => S) {}
+  constructor(readonly modify: (f: Endomorphism<A>) => Endomorphism<S>) {}
 
   /**
    * @since 1.0.0
    */
-  set(a: A): (s: S) => S {
+  set(a: A): Endomorphism<S> {
     return this.modify(constant(a))
   }
 

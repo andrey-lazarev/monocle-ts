@@ -1,15 +1,33 @@
-import * as T from '../../src/Traversal'
+import * as _ from '../../src/Traversal'
 import { pipe } from 'fp-ts/lib/pipeable'
 
-interface A {
-  a: string
-  b: number
-  c: boolean
+interface S {
+  readonly a: string
+  readonly b: number
+  readonly c: boolean
 }
 
-// $ExpectError
-pipe(T.id<A>(), T.props())
-// $ExpectError
-pipe(T.id<A>(), T.props('a'))
+//
+// pick
+//
 
-pipe(T.id<A>(), T.props('a', 'b')) // $ExpectType Traversal<A, { a: string; b: number; }>
+// $ExpectError
+pipe(_.id<S>(), _.pick())
+// $ExpectError
+pipe(_.id<S>(), _.pick('a'))
+
+pipe(_.id<S>(), _.pick('a', 'b')) // $ExpectType Traversal<S, { readonly a: string; readonly b: number; }>
+
+//
+// component
+//
+
+// $ExpectError
+pipe(_.id<{ 1: number }>(), _.component(1))
+
+// $ExpectType readonly [string, number, boolean]
+pipe(
+  _.id<readonly [string, number, boolean]>(),
+  _.component(1),
+  _.modify((n) => n * 2)
+)(['a', 1, true])

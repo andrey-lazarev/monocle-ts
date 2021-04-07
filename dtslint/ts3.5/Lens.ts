@@ -1,10 +1,10 @@
-import * as L from '../../src/Lens'
+import * as _ from '../../src/Lens'
 import { pipe } from 'fp-ts/lib/pipeable'
 
-interface A {
-  a: string
-  b: number
-  c: boolean
+interface S {
+  readonly a: string
+  readonly b: number
+  readonly c: boolean
 }
 
 //
@@ -12,22 +12,29 @@ interface A {
 //
 
 // $ExpectError
-pipe(L.id<A>(), L.prop('d'))
+pipe(_.id<S>(), _.prop('d'))
 
 //
-// props
+// pick
 //
 
 // $ExpectError
-pipe(L.id<A>(), L.props())
+pipe(_.id<S>(), _.pick())
 // $ExpectError
-pipe(L.id<A>(), L.props('a'))
+pipe(_.id<S>(), _.pick('a'))
 
-pipe(L.id<A>(), L.props('a', 'b')) // $ExpectType Lens<A, { a: string; b: number; }>
+pipe(_.id<S>(), _.pick('a', 'b')) // $ExpectType Lens<S, { readonly a: string; readonly b: number; }>
 
 //
 // component
 //
 
 // $ExpectError
-pipe(L.id<{ 1: number }>(), L.component(1))
+pipe(_.id<{ 1: number }>(), _.component(1))
+
+// $ExpectType readonly [string, number, boolean]
+pipe(
+  _.id<readonly [string, number, boolean]>(),
+  _.component(1),
+  _.modify((n) => n * 2)
+)(['a', 1, true])

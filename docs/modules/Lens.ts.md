@@ -44,8 +44,8 @@ Added in v2.3.0
   - [left](#left)
   - [modify](#modify)
   - [modifyF](#modifyf)
+  - [pick](#pick)
   - [prop](#prop)
-  - [props](#props)
   - [right](#right)
   - [some](#some)
   - [traverse](#traverse)
@@ -217,7 +217,7 @@ Added in v2.3.0
 **Signature**
 
 ```ts
-export declare const modify: <A>(f: (a: A) => A) => <S>(sa: Lens<S, A>) => (s: S) => S
+export declare const modify: <A>(f: Endomorphism<A>) => <S>(sa: Lens<S, A>) => Endomorphism<S>
 ```
 
 Added in v2.3.0
@@ -243,6 +243,22 @@ export declare function modifyF<F>(
 
 Added in v2.3.5
 
+## pick
+
+Return a `Lens` from a `Lens` and a list of props.
+
+**Signature**
+
+```ts
+export declare const pick: <A, P extends keyof A>(
+  props_0: P,
+  props_1: P,
+  ...props_2: P[]
+) => <S>(sa: Lens<S, A>) => Lens<S, { readonly [K in P]: A[K] }>
+```
+
+Added in v2.3.10
+
 ## prop
 
 Return a `Lens` from a `Lens` and a prop.
@@ -251,22 +267,6 @@ Return a `Lens` from a `Lens` and a prop.
 
 ```ts
 export declare const prop: <A, P extends keyof A>(prop: P) => <S>(sa: Lens<S, A>) => Lens<S, A[P]>
-```
-
-Added in v2.3.0
-
-## props
-
-Return a `Lens` from a `Lens` and a list of props.
-
-**Signature**
-
-```ts
-export declare const props: <A, P extends keyof A>(
-  props_0: P,
-  props_1: P,
-  ...props_2: P[]
-) => <S>(sa: Lens<S, A>) => Lens<S, { [K in P]: A[K] }>
 ```
 
 Added in v2.3.0
@@ -400,7 +400,7 @@ Added in v2.3.0
 **Signature**
 
 ```ts
-export declare const lens: <S, A>(get: (s: S) => A, set: (a: A) => (s: S) => S) => Lens<S, A>
+export declare const lens: <S, A>(get: (s: S) => A, set: (a: A) => Endomorphism<S>) => Lens<S, A>
 ```
 
 Added in v2.3.8
@@ -492,7 +492,7 @@ Added in v2.3.0
 ```ts
 export interface Lens<S, A> {
   readonly get: (s: S) => A
-  readonly set: (a: A) => (s: S) => S
+  readonly set: (a: A) => Endomorphism<S>
 }
 ```
 

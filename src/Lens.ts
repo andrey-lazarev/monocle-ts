@@ -20,7 +20,7 @@
  */
 import { Category2 } from 'fp-ts/lib/Category'
 import { Either } from 'fp-ts/lib/Either'
-import { flow, Predicate, Refinement } from 'fp-ts/lib/function'
+import { Endomorphism, flow, Predicate, Refinement } from 'fp-ts/lib/function'
 import { Functor, Functor1, Functor2, Functor3 } from 'fp-ts/lib/Functor'
 import { HKT, Kind, Kind2, Kind3, URIS, URIS2, URIS3 } from 'fp-ts/lib/HKT'
 import { Invariant2 } from 'fp-ts/lib/Invariant'
@@ -46,7 +46,7 @@ import { Traversal } from './Traversal'
  */
 export interface Lens<S, A> {
   readonly get: (s: S) => A
-  readonly set: (a: A) => (s: S) => S
+  readonly set: (a: A) => Endomorphism<S>
 }
 
 // -------------------------------------------------------------------------------------
@@ -147,16 +147,6 @@ export const composeTraversal = <A, B>(ab: Traversal<A, B>): (<S>(sa: Lens<S, A>
 
 /**
  * @category combinators
- * @since 2.3.0
- */
-export const modify = <A>(f: (a: A) => A) => <S>(sa: Lens<S, A>) => (s: S): S => {
-  const o = sa.get(s)
-  const n = f(o)
-  return o === n ? s : sa.set(n)(s)
-}
-
-/**
- * @category combinators
  * @since 2.3.5
  */
 export function modifyF<F extends URIS3>(
@@ -170,8 +160,19 @@ export function modifyF<F extends URIS>(
 ): <A>(f: (a: A) => Kind<F, A>) => <S>(sa: Lens<S, A>) => (s: S) => Kind<F, S>
 export function modifyF<F>(F: Functor<F>): <A>(f: (a: A) => HKT<F, A>) => <S>(sa: Lens<S, A>) => (s: S) => HKT<F, S>
 export function modifyF<F>(F: Functor<F>): <A>(f: (a: A) => HKT<F, A>) => <S>(sa: Lens<S, A>) => (s: S) => HKT<F, S> {
-  return (f) => (sa) => (s) => pipe(sa.get(s), f, (fa) => F.map(fa, (a) => sa.set(a)(s)))
+  return (f) => (sa) => (s) => {
+    const o = sa.get(s)
+    return pipe(o, f, (fa) => F.map(fa, (n) => (n === o ? s : sa.set(n)(s))))
+  }
 }
+
+/**
+ * @category combinators
+ * @since 2.3.0
+ */
+export const modify: <A>(f: Endomorphism<A>) => <S>(sa: Lens<S, A>) => Endomorphism<S> =
+  /*#__PURE__*/
+  modifyF(_.IdentityFunctor)
 
 /**
  * Return a `Optional` from a `Lens` focused on a nullable value.
@@ -204,11 +205,11 @@ export const prop: <A, P extends keyof A>(prop: P) => <S>(sa: Lens<S, A>) => Len
  * Return a `Lens` from a `Lens` and a list of props.
  *
  * @category combinators
- * @since 2.3.0
+ * @since 2.3.10
  */
-export const props: <A, P extends keyof A>(
+export const pick: <A, P extends keyof A>(
   ...props: readonly [P, P, ...ReadonlyArray<P>]
-) => <S>(sa: Lens<S, A>) => Lens<S, { [K in P]: A[K] }> = _.lensProps
+) => <S>(sa: Lens<S, A>) => Lens<S, { readonly [K in P]: A[K] }> = _.lensPick
 
 /**
  * Return a `Lens` from a `Lens` focused on a component of a tuple.

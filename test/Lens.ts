@@ -9,6 +9,7 @@ import * as Id from 'fp-ts/lib/Identity'
 import * as U from './util'
 import { ReadonlyRecord } from 'fp-ts/lib/ReadonlyRecord'
 import { ReadonlyNonEmptyArray } from 'fp-ts/lib/ReadonlyNonEmptyArray'
+import { identity } from 'fp-ts/lib/function'
 
 describe('Lens', () => {
   describe('pipeables', () => {
@@ -78,12 +79,18 @@ describe('Lens', () => {
     interface S {
       readonly a: number
     }
-    const sa = pipe(_.id<S>(), _.prop('a'))
     const f = pipe(
-      sa,
+      pipe(_.id<S>(), _.prop('a')),
       _.modify((a) => a * 2)
     )
     U.deepStrictEqual(f({ a: 1 }), { a: 2 })
+    // should return the same reference if nothing changed
+    const input = { a: 1 }
+    const sa: _.Lens<S, number> = _.lens(
+      (s) => s.a,
+      (a) => (s) => ({ ...s, a })
+    )
+    U.strictEqual(pipe(sa, _.modify(identity))(input), input)
   })
 
   it('prop', () => {
@@ -100,7 +107,7 @@ describe('Lens', () => {
     assert.strictEqual(sa.set(1)(s), s)
   })
 
-  it('props', () => {
+  it('pick', () => {
     interface S {
       readonly a: {
         readonly b: string
@@ -108,7 +115,7 @@ describe('Lens', () => {
         readonly d: boolean
       }
     }
-    const sa = pipe(_.id<S>(), _.prop('a'), _.props('b', 'c'))
+    const sa = pipe(_.id<S>(), _.prop('a'), _.pick('b', 'c'))
     const s: S = { a: { b: 'b', c: 1, d: true } }
     U.deepStrictEqual(sa.get(s), { b: 'b', c: 1 })
     U.deepStrictEqual(sa.set({ b: 'b', c: 2 })(s), { a: { b: 'b', c: 2, d: true } })

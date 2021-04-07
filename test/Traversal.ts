@@ -51,14 +51,14 @@ describe('Traversal', () => {
     )
   })
 
-  it('props', () => {
+  it('pick', () => {
     const sa = pipe(
       _.fromTraversable(A.readonlyArray)<{
         readonly a: string
         readonly b: number
         readonly c: boolean
       }>(),
-      _.props('a', 'b')
+      _.pick('a', 'b')
     )
     U.deepStrictEqual(
       sa.modifyF(Id.identity)((x) => ({ a: x.a, b: x.b * 2 }))([

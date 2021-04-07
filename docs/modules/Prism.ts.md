@@ -41,8 +41,8 @@ Added in v2.3.0
   - [modify](#modify)
   - [modifyF](#modifyf)
   - [modifyOption](#modifyoption)
+  - [pick](#pick)
   - [prop](#prop)
-  - [props](#props)
   - [right](#right)
   - [set](#set)
   - [some](#some)
@@ -242,17 +242,33 @@ export declare function modifyF<F>(
 ): <A>(f: (a: A) => HKT<F, A>) => <S>(sa: Prism<S, A>) => (s: S) => HKT<F, S>
 ```
 
-Added in v2.3.5
+Added in v2.3.10
 
 ## modifyOption
 
 **Signature**
 
 ```ts
-export declare const modifyOption: <A>(f: (a: A) => A) => <S>(sa: Prism<S, A>) => (s: S) => O.Option<S>
+export declare const modifyOption: <A>(f: Endomorphism<A>) => <S>(sa: Prism<S, A>) => (s: S) => O.Option<S>
 ```
 
 Added in v2.3.0
+
+## pick
+
+Return a `Optional` from a `Prism` and a list of props.
+
+**Signature**
+
+```ts
+export declare const pick: <A, P extends keyof A>(
+  props_0: P,
+  props_1: P,
+  ...props_2: P[]
+) => <S>(sa: Prism<S, A>) => Optional<S, { readonly [K in P]: A[K] }>
+```
+
+Added in v2.3.10
 
 ## prop
 
@@ -262,22 +278,6 @@ Return a `Optional` from a `Prism` and a prop.
 
 ```ts
 export declare const prop: <A, P extends keyof A>(prop: P) => <S>(sa: Prism<S, A>) => Optional<S, A[P]>
-```
-
-Added in v2.3.0
-
-## props
-
-Return a `Optional` from a `Prism` and a list of props.
-
-**Signature**
-
-```ts
-export declare const props: <A, P extends keyof A>(
-  props_0: P,
-  props_1: P,
-  ...props_2: P[]
-) => <S>(sa: Prism<S, A>) => Optional<S, { [K in P]: A[K] }>
 ```
 
 Added in v2.3.0
@@ -299,7 +299,7 @@ Added in v2.3.0
 **Signature**
 
 ```ts
-export declare const set: <A>(a: A) => <S>(sa: Prism<S, A>) => (s: S) => S
+export declare const set: <A>(a: A) => <S>(sa: Prism<S, A>) => Endomorphism<S>
 ```
 
 Added in v2.3.0
@@ -520,6 +520,11 @@ Added in v2.3.0
 # model
 
 ## Prism (interface)
+
+Laws:
+
+1. `pipe(getOption(s), fold(() => s, reverseGet)) = s`
+2. `getOption(reverseGet(a)) = some(a)`
 
 **Signature**
 

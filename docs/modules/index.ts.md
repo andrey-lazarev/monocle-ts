@@ -595,7 +595,7 @@ Added in v1.0.0
 **Signature**
 
 ```ts
-modify(f: (a: A) => A): (s: S) => S
+modify(f: Endomorphism<A>): Endomorphism<S>
 ```
 
 Added in v1.0.0
@@ -854,7 +854,7 @@ Laws:
 
 ```ts
 export declare class Lens<S, A> {
-  constructor(readonly get: (s: S) => A, readonly set: (a: A) => (s: S) => S)
+  constructor(readonly get: (s: S) => A, readonly set: (a: A) => Endomorphism<S>)
 }
 ```
 
@@ -996,7 +996,7 @@ Added in v1.0.0
 **Signature**
 
 ```ts
-modify(f: (a: A) => A): (s: S) => S
+modify(f: Endomorphism<A>): Endomorphism<S>
 ```
 
 Added in v1.0.0
@@ -1191,7 +1191,7 @@ Laws:
 
 ```ts
 export declare class Optional<S, A> {
-  constructor(readonly getOption: (s: S) => Option<A>, readonly set: (a: A) => (s: S) => S)
+  constructor(readonly getOption: (s: S) => Option<A>, readonly set: (a: A) => Endomorphism<S>)
 }
 ```
 
@@ -1312,7 +1312,7 @@ Added in v1.0.0
 **Signature**
 
 ```ts
-modify(f: (a: A) => A): (s: S) => S
+modify(f: Endomorphism<A>): Endomorphism<S>
 ```
 
 Added in v1.0.0
@@ -1322,7 +1322,7 @@ Added in v1.0.0
 **Signature**
 
 ```ts
-modifyOption(f: (a: A) => A): (s: S) => Option<S>
+modifyOption(f: Endomorphism<A>): (s: S) => Option<S>
 ```
 
 Added in v1.0.0
@@ -1524,7 +1524,7 @@ Added in v1.0.0
 **Signature**
 
 ```ts
-modify(f: (a: A) => A): (s: S) => S
+modify(f: Endomorphism<A>): Endomorphism<S>
 ```
 
 Added in v1.0.0
@@ -1534,7 +1534,7 @@ Added in v1.0.0
 **Signature**
 
 ```ts
-modifyOption(f: (a: A) => A): (s: S) => Option<S>
+modifyOption(f: Endomorphism<A>): (s: S) => Option<S>
 ```
 
 Added in v1.0.0
@@ -1546,7 +1546,7 @@ set the target of a `Prism` with a value
 **Signature**
 
 ```ts
-set(a: A): (s: S) => S
+set(a: A): Endomorphism<S>
 ```
 
 Added in v1.0.0
@@ -1723,7 +1723,7 @@ Added in v1.0.0
 
 ```ts
 export declare class Setter<S, A> {
-  constructor(readonly modify: (f: (a: A) => A) => (s: S) => S)
+  constructor(readonly modify: (f: Endomorphism<A>) => Endomorphism<S>)
 }
 ```
 
@@ -1734,7 +1734,7 @@ Added in v1.0.0
 **Signature**
 
 ```ts
-set(a: A): (s: S) => S
+set(a: A): Endomorphism<S>
 ```
 
 Added in v1.0.0
@@ -1853,7 +1853,7 @@ Added in v1.0.0
 **Signature**
 
 ```ts
-modify(f: (a: A) => A): (s: S) => S
+modify(f: Endomorphism<A>): Endomorphism<S>
 ```
 
 Added in v1.0.0
@@ -1863,7 +1863,7 @@ Added in v1.0.0
 **Signature**
 
 ```ts
-set(a: A): (s: S) => S
+set(a: A): Endomorphism<S>
 ```
 
 Added in v1.0.0

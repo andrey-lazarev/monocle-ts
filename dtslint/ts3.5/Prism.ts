@@ -1,15 +1,34 @@
-import * as P from '../../src/Prism'
+import * as _ from '../../src/Prism'
+import * as O from '../../src/Optional'
 import { pipe } from 'fp-ts/lib/pipeable'
 
-interface A {
-  a: string
-  b: number
-  c: boolean
+interface S {
+  readonly a: string
+  readonly b: number
+  readonly c: boolean
 }
 
-// $ExpectError
-pipe(P.id<A>(), P.props())
-// $ExpectError
-pipe(P.id<A>(), P.props('a'))
+//
+// pick
+//
 
-pipe(P.id<A>(), P.props('a', 'b')) // $ExpectType Optional<A, { a: string; b: number; }>
+// $ExpectError
+pipe(_.id<S>(), _.pick())
+// $ExpectError
+pipe(_.id<S>(), _.pick('a'))
+
+pipe(_.id<S>(), _.pick('a', 'b')) // $ExpectType Optional<S, { readonly a: string; readonly b: number; }>
+
+//
+// component
+//
+
+// $ExpectError
+pipe(_.id<{ 1: number }>(), _.component(1))
+
+// $ExpectType readonly [string, number, boolean]
+pipe(
+  _.id<readonly [string, number, boolean]>(),
+  _.component(1),
+  O.modify((n) => n * 2)
+)(['a', 1, true])
