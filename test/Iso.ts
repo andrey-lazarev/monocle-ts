@@ -337,4 +337,17 @@ describe('Iso', () => {
     U.deepStrictEqual(sa.get({ a: 'a', b: 1 }), { c: 'a', b: 1 })
     U.deepStrictEqual(sa.reverseGet({ c: 'a', b: 1 }), { a: 'a', b: 1 })
   })
+
+  it('it', () => {
+    interface S {
+      readonly a: string
+      readonly b: number
+    }
+    const f = pipe(
+      _.id<S>(),
+      _.rename('a', 'c'),
+      _.insert('d', (s) => s.b + 1)
+    )
+    U.deepStrictEqual(f({ a: 'a', b: 1 }), { c: 'a', b: 1, d: 2 })
+  })
 })

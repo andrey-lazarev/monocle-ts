@@ -70,6 +70,8 @@ Added in v2.3.0
 - [model](#model)
   - [Iso (interface)](#iso-interface)
 - [modifiers](#modifiers)
+  - [insert](#insert)
+  - [insertE](#inserte)
   - [modify](#modify)
   - [modifyF](#modifyf)
 
@@ -530,6 +532,46 @@ export interface Iso<S, A> {
 Added in v2.3.0
 
 # modifiers
+
+## insert
+
+**Signature**
+
+```ts
+export declare const insert: <A, P extends string, B>(
+  prop: Exclude<P, keyof A>,
+  f: (a: A) => B
+) => <S>(sa: Iso<S, A>) => (s: S) => { readonly [K in P | keyof A]: K extends keyof A ? A[K] : B }
+```
+
+Added in v2.3.10
+
+## insertE
+
+**Signature**
+
+```ts
+export declare function insertE<F extends URIS3>(
+  F: Functor3<F>
+): <P extends string, A, R, E, B>(
+  prop: Exclude<P, keyof A>,
+  f: (a: A) => Kind3<F, R, E, B>
+) => <S>(sa: Iso<S, A>) => (s: S) => Kind3<F, R, E, { readonly [K in keyof A | P]: K extends keyof A ? A[K] : B }>
+export declare function insertE<F extends URIS2>(
+  F: Functor2<F>
+): <P extends string, A, E, B>(
+  prop: Exclude<P, keyof A>,
+  f: (a: A) => Kind2<F, E, B>
+) => <S>(sa: Iso<S, A>) => (s: S) => Kind2<F, E, { readonly [K in keyof A | P]: K extends keyof A ? A[K] : B }>
+export declare function insertE<F extends URIS>(
+  F: Functor1<F>
+): <P extends string, A, B>(
+  prop: Exclude<P, keyof A>,
+  f: (a: A) => Kind<F, B>
+) => <S>(sa: Iso<S, A>) => (s: S) => Kind<F, { readonly [K in keyof A | P]: K extends keyof A ? A[K] : B }>
+```
+
+Added in v2.3.10
 
 ## modify
 

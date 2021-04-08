@@ -175,7 +175,7 @@ export function modifyF<F>(F: Functor<F>): <A>(f: (a: A) => HKT<F, A>) => <S>(sa
 export function modifyF<F>(F: Functor<F>): <A>(f: (a: A) => HKT<F, A>) => <S>(sa: Iso<S, A>) => (s: S) => HKT<F, S> {
   return (f) => (sa) => (s) => {
     const o = sa.get(s)
-    return pipe(o, f, (fa) => F.map(fa, (n) => (n === o ? s : sa.reverseGet(n))))
+    return F.map(f(o), (n) => (n === o ? s : sa.reverseGet(n)))
   }
 }
 
@@ -186,6 +186,51 @@ export function modifyF<F>(F: Functor<F>): <A>(f: (a: A) => HKT<F, A>) => <S>(sa
 export const modify: <A>(f: Endomorphism<A>) => <S>(sa: Iso<S, A>) => Endomorphism<S> =
   /*#__PURE__*/
   modifyF(_.IdentityFunctor)
+
+/**
+ * @category modifiers
+ * @since 2.3.10
+ */
+export function insertE<F extends URIS3>(
+  F: Functor3<F>
+): <P extends string, A, R, E, B>(
+  prop: Exclude<P, keyof A>,
+  f: (a: A) => Kind3<F, R, E, B>
+) => <S>(sa: Iso<S, A>) => (s: S) => Kind3<F, R, E, { readonly [K in keyof A | P]: K extends keyof A ? A[K] : B }>
+export function insertE<F extends URIS2>(
+  F: Functor2<F>
+): <P extends string, A, E, B>(
+  prop: Exclude<P, keyof A>,
+  f: (a: A) => Kind2<F, E, B>
+) => <S>(sa: Iso<S, A>) => (s: S) => Kind2<F, E, { readonly [K in keyof A | P]: K extends keyof A ? A[K] : B }>
+export function insertE<F extends URIS>(
+  F: Functor1<F>
+): <P extends string, A, B>(
+  prop: Exclude<P, keyof A>,
+  f: (a: A) => Kind<F, B>
+) => <S>(sa: Iso<S, A>) => (s: S) => Kind<F, { readonly [K in keyof A | P]: K extends keyof A ? A[K] : B }>
+export function insertE<F>(
+  F: Functor<F>
+): <P extends string, A, B>(
+  prop: Exclude<P, keyof A>,
+  f: (a: A) => HKT<F, B>
+) => <S>(sa: Iso<S, A>) => (s: S) => HKT<F, { readonly [K in keyof A | P]: K extends keyof A ? A[K] : B }> {
+  return (prop, f) => (sa) => (s) => {
+    const a = sa.get(s)
+    return F.map(f(a), (b) => _.insertAt(prop, b)(a))
+  }
+}
+
+/**
+ * @category modifiers
+ * @since 2.3.10
+ */
+export const insert: <A, P extends string, B>(
+  prop: Exclude<P, keyof A>,
+  f: (a: A) => B
+) => <S>(sa: Iso<S, A>) => (s: S) => { readonly [K in keyof A | P]: K extends keyof A ? A[K] : B } =
+  /*#__PURE__*/
+  insertE(_.IdentityFunctor)
 
 // -------------------------------------------------------------------------------------
 // combinators

@@ -18,20 +18,22 @@ high state of flux, you're at risk of it changing without notice.
 - **Experimental**
   - (\*) rename `props` to `pick`
   - `Iso`
-    - add `omit`
-    - add `rename`
+    - add `omit` combinator
+    - add `rename` combinator
+    - add `insertE` modifier
+    - add `insert` modifier
   - `Lens`
-    - add `omit`
-    - add `rename`
+    - add `omit` combinator
+    - add `rename` combinator
   - `Prism`
-    - add `omit`
-    - add `rename`
+    - add `omit` combinator
+    - add `rename` combinator
   - `Optional`
-    - add `omit`
-    - add `rename`
+    - add `omit` combinator
+    - add `rename` combinator
   - `Traversal`
-    - add `omit`
-    - add `rename`
+    - add `omit` combinator
+    - add `rename` combinator
 
 (\*) breaking change
 

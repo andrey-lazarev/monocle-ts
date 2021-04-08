@@ -28,10 +28,21 @@ import { Optional } from './Optional'
 import { Prism } from './Prism'
 import { Traversal } from './Traversal'
 
+// -------------------------------------------------------------------------------------
+// utils
+// -------------------------------------------------------------------------------------
+
 /** @internal */
 export const IdentityFunctor: Functor1<I.URI> = {
   URI: I.URI,
   map: (fa, f) => f(fa)
+}
+
+/** @internal */
+export const insertAt = <P extends string, S, B>(prop: Exclude<P, keyof S>, b: B) => (
+  s: S
+): { readonly [K in keyof S | P]: K extends keyof S ? S[K] : B } => {
+  return { ...s, [prop]: b } as any
 }
 
 // -------------------------------------------------------------------------------------

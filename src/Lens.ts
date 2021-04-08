@@ -162,7 +162,7 @@ export function modifyF<F>(F: Functor<F>): <A>(f: (a: A) => HKT<F, A>) => <S>(sa
 export function modifyF<F>(F: Functor<F>): <A>(f: (a: A) => HKT<F, A>) => <S>(sa: Lens<S, A>) => (s: S) => HKT<F, S> {
   return (f) => (sa) => (s) => {
     const o = sa.get(s)
-    return pipe(o, f, (fa) => F.map(fa, (n) => (n === o ? s : sa.set(n)(s))))
+    return F.map(f(o), (n) => (n === o ? s : sa.set(n)(s)))
   }
 }
 
