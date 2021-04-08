@@ -155,27 +155,11 @@ export const composeTraversal = <A, B>(ab: Traversal<A, B>): (<S>(sa: Iso<S, A>)
   flow(asTraversal, _.traversalComposeTraversal(ab))
 
 // -------------------------------------------------------------------------------------
-// combinators
+// modifiers
 // -------------------------------------------------------------------------------------
 
 /**
- * @category combinators
- * @since 2.3.10
- */
-export const rename = <A, F extends keyof A, T extends string>(
-  from: F,
-  to: Exclude<T, keyof A>
-): (<S>(sa: Iso<S, A>) => Iso<S, { readonly [K in Exclude<keyof A, F> | T]: K extends keyof A ? A[K] : A[F] }>) =>
-  compose(_.isoRename<A>()(from, to))
-
-/**
- * @category combinators
- * @since 2.3.0
- */
-export const reverse = <S, A>(sa: Iso<S, A>): Iso<A, S> => iso(sa.reverseGet, sa.get)
-
-/**
- * @category combinators
+ * @category modifiers
  * @since 2.3.5
  */
 export function modifyF<F extends URIS3>(
@@ -196,12 +180,32 @@ export function modifyF<F>(F: Functor<F>): <A>(f: (a: A) => HKT<F, A>) => <S>(sa
 }
 
 /**
- * @category combinators
+ * @category modifiers
  * @since 2.3.0
  */
 export const modify: <A>(f: Endomorphism<A>) => <S>(sa: Iso<S, A>) => Endomorphism<S> =
   /*#__PURE__*/
   modifyF(_.IdentityFunctor)
+
+// -------------------------------------------------------------------------------------
+// combinators
+// -------------------------------------------------------------------------------------
+
+/**
+ * @category combinators
+ * @since 2.3.10
+ */
+export const rename = <A, F extends keyof A, T extends string>(
+  from: F,
+  to: Exclude<T, keyof A>
+): (<S>(sa: Iso<S, A>) => Iso<S, { readonly [K in Exclude<keyof A, F> | T]: K extends keyof A ? A[K] : A[F] }>) =>
+  compose(_.isoRename<A>()(from, to))
+
+/**
+ * @category combinators
+ * @since 2.3.0
+ */
+export const reverse = <S, A>(sa: Iso<S, A>): Iso<A, S> => iso(sa.reverseGet, sa.get)
 
 /**
  * Return a `Prism` from a `Iso` focused on a nullable value.

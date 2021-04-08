@@ -154,21 +154,11 @@ export const composeTraversal = <A, B>(ab: Traversal<A, B>): (<S>(sa: Prism<S, A
   flow(asTraversal, _.traversalComposeTraversal(ab))
 
 // -------------------------------------------------------------------------------------
-// combinators
+// modifiers
 // -------------------------------------------------------------------------------------
 
 /**
- * @category combinators
- * @since 2.3.10
- */
-export const rename = <A, F extends keyof A, T extends string>(
-  from: F,
-  to: Exclude<T, keyof A>
-): (<S>(sa: Prism<S, A>) => Prism<S, { readonly [K in T | Exclude<keyof A, F>]: K extends keyof A ? A[K] : A[F] }>) =>
-  composeIso(_.isoRename<A>()(from, to))
-
-/**
- * @category combinators
+ * @category modifiers
  * @since 2.3.10
  */
 export function modifyF<F extends URIS3>(
@@ -190,22 +180,36 @@ export function modifyF<F>(
 }
 
 /**
- * @category combinators
+ * @category modifiers
  * @since 2.3.0
  */
 export const modify: <A>(f: (a: A) => A) => <S>(sa: Prism<S, A>) => (s: S) => S = _.prismModify
 
 /**
- * @category combinators
+ * @category modifiers
  * @since 2.3.0
  */
 export const modifyOption: <A>(f: Endomorphism<A>) => <S>(sa: Prism<S, A>) => (s: S) => Option<S> = _.prismModifyOption
 
 /**
- * @category combinators
+ * @category modifiers
  * @since 2.3.0
  */
 export const set = <A>(a: A): (<S>(sa: Prism<S, A>) => Endomorphism<S>) => modify(() => a)
+
+// -------------------------------------------------------------------------------------
+// combinators
+// -------------------------------------------------------------------------------------
+
+/**
+ * @category combinators
+ * @since 2.3.10
+ */
+export const rename = <A, F extends keyof A, T extends string>(
+  from: F,
+  to: Exclude<T, keyof A>
+): (<S>(sa: Prism<S, A>) => Prism<S, { readonly [K in T | Exclude<keyof A, F>]: K extends keyof A ? A[K] : A[F] }>) =>
+  composeIso(_.isoRename<A>()(from, to))
 
 /**
  * Return a `Prism` from a `Prism` focused on a nullable value.

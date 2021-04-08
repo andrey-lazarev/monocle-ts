@@ -149,6 +149,22 @@ export const composeOptional: <A, B>(ab: Optional<A, B>) => <S>(sa: Traversal<S,
   flow(_.optionalAsTraversal, _.traversalComposeTraversal)
 
 // -------------------------------------------------------------------------------------
+// modifiers
+// -------------------------------------------------------------------------------------
+
+/**
+ * @category modifiers
+ * @since 2.3.0
+ */
+export const modify = <A>(f: Endomorphism<A>) => <S>(sa: Traversal<S, A>): Endomorphism<S> => sa.modifyF(I.identity)(f)
+
+/**
+ * @category modifiers
+ * @since 2.3.0
+ */
+export const set = <A>(a: A): (<S>(sa: Traversal<S, A>) => Endomorphism<S>) => modify(() => a)
+
+// -------------------------------------------------------------------------------------
 // combinators
 // -------------------------------------------------------------------------------------
 
@@ -163,22 +179,6 @@ export const rename = <A, F extends keyof A, T extends string>(
   sa: Traversal<S, A>
 ) => Traversal<S, { readonly [K in T | Exclude<keyof A, F>]: K extends keyof A ? A[K] : A[F] }>) =>
   composeIso(_.isoRename<A>()(from, to))
-
-/**
- * @category combinators
- * @since 2.3.0
- */
-export const modify = <A>(f: Endomorphism<A>) => <S>(sa: Traversal<S, A>): Endomorphism<S> => {
-  return sa.modifyF(I.identity)(f)
-}
-
-/**
- * @category combinators
- * @since 2.3.0
- */
-export const set = <A>(a: A): (<S>(sa: Traversal<S, A>) => Endomorphism<S>) => {
-  return modify(() => a)
-}
 
 /**
  * Return a `Traversal` from a `Traversal` focused on a nullable value.

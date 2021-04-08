@@ -43,15 +43,11 @@ Added in v2.3.0
   - [indexNonEmpty](#indexnonempty)
   - [key](#key)
   - [left](#left)
-  - [modify](#modify)
-  - [modifyF](#modifyf)
-  - [modifyOption](#modifyoption)
   - [omit](#omit)
   - [pick](#pick)
   - [prop](#prop)
   - [rename](#rename)
   - [right](#right)
-  - [setOption](#setoption)
   - [some](#some)
   - [traverse](#traverse)
 - [compositions](#compositions)
@@ -74,6 +70,11 @@ Added in v2.3.0
   - [URI (type alias)](#uri-type-alias)
 - [model](#model)
   - [Optional (interface)](#optional-interface)
+- [modifiers](#modifiers)
+  - [modify](#modify)
+  - [modifyF](#modifyf)
+  - [modifyOption](#modifyoption)
+  - [setOption](#setoption)
 
 ---
 
@@ -218,47 +219,6 @@ export declare const left: <S, E, A>(sea: Optional<S, Either<E, A>>) => Optional
 
 Added in v2.3.0
 
-## modify
-
-**Signature**
-
-```ts
-export declare const modify: <A>(f: Endomorphism<A>) => <S>(optional: Optional<S, A>) => Endomorphism<S>
-```
-
-Added in v2.3.0
-
-## modifyF
-
-**Signature**
-
-```ts
-export declare function modifyF<F extends URIS3>(
-  F: Applicative3<F>
-): <A, R, E>(f: (a: A) => Kind3<F, R, E, A>) => <S>(sa: Optional<S, A>) => (s: S) => Kind3<F, R, E, S>
-export declare function modifyF<F extends URIS2>(
-  F: Applicative2<F>
-): <A, E>(f: (a: A) => Kind2<F, E, A>) => <S>(sa: Optional<S, A>) => (s: S) => Kind2<F, E, S>
-export declare function modifyF<F extends URIS>(
-  F: Applicative1<F>
-): <A>(f: (a: A) => Kind<F, A>) => <S>(sa: Optional<S, A>) => (s: S) => Kind<F, S>
-export declare function modifyF<F>(
-  F: Applicative<F>
-): <A>(f: (a: A) => HKT<F, A>) => <S>(sa: Optional<S, A>) => (s: S) => HKT<F, S>
-```
-
-Added in v2.3.5
-
-## modifyOption
-
-**Signature**
-
-```ts
-export declare const modifyOption: <A>(f: Endomorphism<A>) => <S>(optional: Optional<S, A>) => (s: S) => O.Option<S>
-```
-
-Added in v2.3.0
-
 ## omit
 
 Return a `Optional` from a `Optional` and a list of omitted props.
@@ -328,16 +288,6 @@ export declare const right: <S, E, A>(sea: Optional<S, Either<E, A>>) => Optiona
 ```
 
 Added in v2.3.0
-
-## setOption
-
-**Signature**
-
-```ts
-export declare const setOption: <A>(a: A) => <S>(optional: Optional<S, A>) => (s: S) => O.Option<S>
-```
-
-Added in v2.3.7
 
 ## some
 
@@ -544,3 +494,56 @@ export interface Optional<S, A> {
 ```
 
 Added in v2.3.0
+
+# modifiers
+
+## modify
+
+**Signature**
+
+```ts
+export declare const modify: <A>(f: Endomorphism<A>) => <S>(optional: Optional<S, A>) => Endomorphism<S>
+```
+
+Added in v2.3.0
+
+## modifyF
+
+**Signature**
+
+```ts
+export declare function modifyF<F extends URIS3>(
+  F: Applicative3<F>
+): <A, R, E>(f: (a: A) => Kind3<F, R, E, A>) => <S>(sa: Optional<S, A>) => (s: S) => Kind3<F, R, E, S>
+export declare function modifyF<F extends URIS2>(
+  F: Applicative2<F>
+): <A, E>(f: (a: A) => Kind2<F, E, A>) => <S>(sa: Optional<S, A>) => (s: S) => Kind2<F, E, S>
+export declare function modifyF<F extends URIS>(
+  F: Applicative1<F>
+): <A>(f: (a: A) => Kind<F, A>) => <S>(sa: Optional<S, A>) => (s: S) => Kind<F, S>
+export declare function modifyF<F>(
+  F: Applicative<F>
+): <A>(f: (a: A) => HKT<F, A>) => <S>(sa: Optional<S, A>) => (s: S) => HKT<F, S>
+```
+
+Added in v2.3.5
+
+## modifyOption
+
+**Signature**
+
+```ts
+export declare const modifyOption: <A>(f: Endomorphism<A>) => <S>(optional: Optional<S, A>) => (s: S) => O.Option<S>
+```
+
+Added in v2.3.0
+
+## setOption
+
+**Signature**
+
+```ts
+export declare const setOption: <A>(a: A) => <S>(optional: Optional<S, A>) => (s: S) => O.Option<S>
+```
+
+Added in v2.3.7

@@ -38,13 +38,11 @@ Added in v2.3.0
   - [indexNonEmpty](#indexnonempty)
   - [key](#key)
   - [left](#left)
-  - [modify](#modify)
   - [omit](#omit)
   - [pick](#pick)
   - [prop](#prop)
   - [rename](#rename)
   - [right](#right)
-  - [set](#set)
   - [some](#some)
   - [traverse](#traverse)
 - [compositions](#compositions)
@@ -67,6 +65,9 @@ Added in v2.3.0
 - [model](#model)
   - [ModifyF (interface)](#modifyf-interface)
   - [Traversal (interface)](#traversal-interface)
+- [modifiers](#modifiers)
+  - [modify](#modify)
+  - [set](#set)
 
 ---
 
@@ -241,16 +242,6 @@ export declare const left: <S, E, A>(sea: Traversal<S, Either<E, A>>) => Travers
 
 Added in v2.3.0
 
-## modify
-
-**Signature**
-
-```ts
-export declare const modify: <A>(f: Endomorphism<A>) => <S>(sa: Traversal<S, A>) => Endomorphism<S>
-```
-
-Added in v2.3.0
-
 ## omit
 
 Return a `Traversal` from a `Traversal` and a list of omitted props.
@@ -317,16 +308,6 @@ Return a `Traversal` from a `Traversal` focused on the `Right` of a `Either` typ
 
 ```ts
 export declare const right: <S, E, A>(sea: Traversal<S, Either<E, A>>) => Traversal<S, A>
-```
-
-Added in v2.3.0
-
-## set
-
-**Signature**
-
-```ts
-export declare const set: <A>(a: A) => <S>(sa: Traversal<S, A>) => Endomorphism<S>
 ```
 
 Added in v2.3.0
@@ -576,6 +557,28 @@ Added in v2.3.0
 export interface Traversal<S, A> {
   readonly modifyF: ModifyF<S, A>
 }
+```
+
+Added in v2.3.0
+
+# modifiers
+
+## modify
+
+**Signature**
+
+```ts
+export declare const modify: <A>(f: Endomorphism<A>) => <S>(sa: Traversal<S, A>) => Endomorphism<S>
+```
+
+Added in v2.3.0
+
+## set
+
+**Signature**
+
+```ts
+export declare const set: <A>(a: A) => <S>(sa: Traversal<S, A>) => Endomorphism<S>
 ```
 
 Added in v2.3.0

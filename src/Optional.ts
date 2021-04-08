@@ -142,23 +142,11 @@ export const composeTraversal = <A, B>(ab: Traversal<A, B>): (<S>(sa: Optional<S
   flow(asTraversal, _.traversalComposeTraversal(ab))
 
 // -------------------------------------------------------------------------------------
-// combinators
+// modifiers
 // -------------------------------------------------------------------------------------
 
 /**
- * @category combinators
- * @since 2.3.10
- */
-export const rename = <A, F extends keyof A, T extends string>(
-  from: F,
-  to: Exclude<T, keyof A>
-): (<S>(
-  sa: Optional<S, A>
-) => Optional<S, { readonly [K in T | Exclude<keyof A, F>]: K extends keyof A ? A[K] : A[F] }>) =>
-  composeIso(_.isoRename<A>()(from, to))
-
-/**
- * @category combinators
+ * @category modifiers
  * @since 2.3.5
  */
 export function modifyF<F extends URIS3>(
@@ -180,23 +168,39 @@ export function modifyF<F>(
 }
 
 /**
- * @category combinators
+ * @category modifiers
+ * @since 2.3.0
+ */
+export const modify: <A>(f: Endomorphism<A>) => <S>(optional: Optional<S, A>) => Endomorphism<S> = _.optionalModify
+
+/**
+ * @category modifiers
  * @since 2.3.0
  */
 export const modifyOption: <A>(f: Endomorphism<A>) => <S>(optional: Optional<S, A>) => (s: S) => Option<S> =
   _.optionalModifyOption
 
 /**
- * @category combinators
+ * @category modifiers
  * @since 2.3.7
  */
 export const setOption = <A>(a: A): (<S>(optional: Optional<S, A>) => (s: S) => Option<S>) => modifyOption(() => a)
 
+// -------------------------------------------------------------------------------------
+// combinators
+// -------------------------------------------------------------------------------------
+
 /**
  * @category combinators
- * @since 2.3.0
+ * @since 2.3.10
  */
-export const modify: <A>(f: Endomorphism<A>) => <S>(optional: Optional<S, A>) => Endomorphism<S> = _.optionalModify
+export const rename = <A, F extends keyof A, T extends string>(
+  from: F,
+  to: Exclude<T, keyof A>
+): (<S>(
+  sa: Optional<S, A>
+) => Optional<S, { readonly [K in T | Exclude<keyof A, F>]: K extends keyof A ? A[K] : A[F] }>) =>
+  composeIso(_.isoRename<A>()(from, to))
 
 /**
  * Return an `Optional` from a `Optional` focused on a nullable value.
