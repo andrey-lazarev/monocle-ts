@@ -244,7 +244,7 @@ export const rename = <A, F extends keyof A, T extends string>(
   from: F,
   to: Exclude<T, keyof A>
 ): (<S>(sa: Iso<S, A>) => Iso<S, { readonly [K in Exclude<keyof A, F> | T]: K extends keyof A ? A[K] : A[F] }>) =>
-  compose(_.isoRename<A>()(from, to))
+  composeIso(_.isoRename<A>()(from, to))
 
 /**
  * @category combinators

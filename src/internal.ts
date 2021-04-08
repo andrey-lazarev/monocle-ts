@@ -45,6 +45,16 @@ export const insertAt = <P extends string, S, B>(prop: Exclude<P, keyof S>, b: B
   return { ...s, [prop]: b } as any
 }
 
+const renameAt = <S, F extends keyof S, T extends string>(from: F, to: Exclude<T, keyof S>) => (
+  s: S
+): { readonly [K in Exclude<keyof S, F> | T]: K extends keyof S ? S[K] : S[F] } => {
+  const a: any = { ...s }
+  const value = a[from]
+  delete a[from]
+  a[to] = value
+  return a
+}
+
 // -------------------------------------------------------------------------------------
 // Iso
 // -------------------------------------------------------------------------------------
@@ -75,26 +85,11 @@ export const isoAsTraversal = <S, A>(sa: Iso<S, A>): Traversal<S, A> =>
   )
 
 /** @internal */
-export const isoRename = <S>() => <A, F extends keyof A, T extends string>(
+export const isoRename = <S>() => <F extends keyof S, T extends string>(
   from: F,
-  to: Exclude<T, keyof A>
-): Iso<S, { readonly [K in Exclude<keyof A, F> | T]: K extends keyof A ? A[K] : A[F] }> =>
-  iso(
-    (s) => {
-      const b: any = { ...s }
-      const value = b[from]
-      delete b[from]
-      b[to] = value
-      return b
-    },
-    (b) => {
-      const a: any = { ...b }
-      const value = a[to]
-      delete a[to]
-      a[from] = value
-      return a
-    }
-  )
+  to: Exclude<T, keyof S>
+): Iso<S, { readonly [K in Exclude<keyof S, F> | T]: K extends keyof S ? S[K] : S[F] }> =>
+  iso(renameAt(from, to), (renameAt as any)(to, from))
 
 // -------------------------------------------------------------------------------------
 // Lens
